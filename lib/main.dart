@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:shop_app/admin/adminHomePage.dart';
 // import 'package:get/get.dart';
 import 'package:shop_app/pages/homePage.dart';
 import 'package:shop_app/pages/signIn.dart';
@@ -30,9 +31,16 @@ Future<void> main() async {
   //});
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   String login = sharedPreferences.getString('email');
-  print("Login: " + login.toString());
+  String role = sharedPreferences.getString('role');
 
-  runApp(MyApp(title: title, login: login));
+  print("login: " + login.toString());
+  print("role: " + role.toString());
+
+  runApp(MyApp(
+    title: title,
+    login: login,
+    role: role,
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -40,23 +48,36 @@ class MyApp extends StatelessWidget {
     Key key,
     this.title,
     this.login,
+    this.role,
   }) : super(key: key);
 
   final String title;
   final String login;
+  final String role;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-
-      //home: HomeScreen(),
-      home: login != null ? HomePage() : SignIn(),
-
-      //Cals(),
-      // We use routeName so that we dont need to remember the name
+      title: 'Jam Food',
+      home: getState(login),
+      theme: ThemeData(
+        primaryColor: Color(0xFF40BF73),
+      ),
       initialRoute: "/",
       onGenerateRoute: RouteGenerator.generateRoute,
     );
+  }
+
+  Widget getState(value) {
+    if (login != null) {
+      if (role == "User") {
+        value = HomePage();
+      } else if (role == "Admin") {
+        value = AdminPanel();
+      }
+    } else {
+      value = SignIn();
+    }
+    return value;
   }
 }

@@ -7,8 +7,13 @@ SnackBar snackBarWidget(Widget content, Color color) {
 InputDecoration textFieldInputDecoration(
     BuildContext context, String labelText) {
   return InputDecoration(
-    labelText: labelText,
-    labelStyle: TextStyle(
+    hintText: labelText,
+    border: new OutlineInputBorder(
+      borderSide: new BorderSide(color: Colors.white),
+    ),
+    fillColor: Colors.white,
+    filled: true,
+    hintStyle: TextStyle(
       fontFamily: 'PlayfairDisplay-Regular',
       fontSize: 15.0,
     ),
@@ -19,12 +24,36 @@ InputDecoration textFieldInputDecoration(
 InputDecoration textFieldInputDecorationForLoginPagePassword(
     BuildContext context, String labelText, IconButton suffixIcon) {
   return InputDecoration(
+    border: new OutlineInputBorder(
+      borderSide: new BorderSide(color: Colors.white),
+    ),
     suffixIcon: suffixIcon,
     focusColor: Theme.of(context).primaryColor,
-    labelText: labelText,
-    labelStyle: TextStyle(
+    hintText: labelText,
+    fillColor: Colors.white,
+    filled: true,
+    hintStyle: TextStyle(
       fontFamily: 'PlayfairDisplay-Regular',
       fontSize: 15.0,
     ),
   );
+}
+
+class BackgroundImage extends StatelessWidget {
+  const BackgroundImage({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          colorFilter: new ColorFilter.mode(Colors.black45, BlendMode.darken),
+          image: AssetImage("assets/images/loginCover.jpg"),
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
 }

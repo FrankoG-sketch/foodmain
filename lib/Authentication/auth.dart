@@ -19,7 +19,7 @@ Future<String> getCurrentUID() async {
 class Authentication {
   //SIGN UP.....................................................................
   Future signUp(BuildContext context, String email, String name,
-      String password, String address) async {
+      String password, String address, VoidCallback callBack) async {
     try {
       FocusScope.of(context).requestFocus(FocusNode());
       UserCredential result = await _auth.createUserWithEmailAndPassword(
@@ -32,7 +32,7 @@ class Authentication {
           'https://firebasestorage.googleapis.com/v0/b/jmarket-9aa0f.appspot.com/o/blankprofile.png?alt=media&token=98d1a4fb-ac69-46d9-804a-9bf2d8d9cfb8';
 
       String path = '';
-      //String role = "User";
+      String role = "User";
 
       var usersObject = {
         'FullName': name,
@@ -42,7 +42,7 @@ class Authentication {
         'uid': uid,
         'path': path,
         'date': date,
-        // 'role': role,
+        'role': role,
       };
 
       var userInformationObject = {
@@ -83,6 +83,7 @@ class Authentication {
 
       Navigator.of(context).pop();
     } on FirebaseException catch (e) {
+      callBack();
       var error = e.message.toString().replaceAll(
           'com.google.firebase.FirebaseException: An internal error has' +
               ' occurred. [ Unable to resolve host "www.googleapis.com":' +
@@ -118,14 +119,11 @@ class Authentication {
   }
 
   //LOGIN.......................................................................
-  Future signIn(BuildContext context, String email, String password) async {
-    // DBCrypt dbCrypt = DBCrypt();
+  Future signIn(BuildContext context, String email, String password,
+      VoidCallback callBack) async {
 
-    // String hashedPassword = dbCrypt.hashpw(password, dbCrypt.gensalt());
 
     try {
-      var date = DateTime.now();
-
       FocusScope.of(context).requestFocus(FocusNode());
 
       UserCredential result = await _auth.signInWithEmailAndPassword(
@@ -134,40 +132,36 @@ class Authentication {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('email', email);
 
-      Navigator.of(context).pushNamedAndRemoveUntil(
-          '/homePage', (Route<dynamic> route) => false);
+      final DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection("Users")
+          .doc(result.user.uid)
+          .get();
 
-      // await FirebaseFirestore.instance
-      //     .collection('Users Token Data')
-      //     .doc(result.user.uid)
-      //     .set(userTokenDataObject);
+      String role = snapshot['role'];
 
-      // final DocumentSnapshot snapshot = await FirebaseFirestore.instance
-      //     .collection("Users")
-      //     .doc(result.user.uid)
-      //     .get();
+      print("role: " + role);
 
-      // String role = snapshot['role'];
+      FirebaseFirestore.instance
+          .collection("Users")
+          .where("uid", isEqualTo: result.user.uid)
+          .get()
+          .then(
+        (value) {
+          if (role.isNotEmpty) {
+            if (role == 'User') {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/homePage', (Route<dynamic> route) => false);
+            } else if (role == 'Admin') {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/adminPanel', (Route<dynamic> route) => false);
+            }
+          }
+        },
+      );
 
-      // print("role: " + role);
-
-      // FirebaseFirestore.instance
-      //     .collection("Users")
-      //     .where("uid", isEqualTo: result.user.uid)
-      //     .get()
-      //     .then((value) {
-      //   if (role.isNotEmpty) {
-      //     if (role == 'User') {
-      //
-      //     } else if (role == 'Admin') {
-      //       Navigator.of(context).pushNamedAndRemoveUntil(
-      //           '/adminHomePage', (Route<dynamic> route) => false);
-      //     }
-      //   }
-      // });
-
-      // prefs.setString('role', role);
+      prefs.setString('role', role);
     } on FirebaseException catch (e) {
+      callBack();
       var error = e.message.toString();
 
       var snackBar = snackBarWidget(
@@ -196,7 +190,8 @@ class Authentication {
   }
 
   //RESET PASSWORD..............................................................
-  Future reset(BuildContext context, String email) async {
+  Future reset(
+      BuildContext context, String email, VoidCallback callBack) async {
     try {
       FirebaseAuth.instance
           .sendPasswordResetEmail(email: email)
@@ -219,6 +214,7 @@ class Authentication {
 
       //Navigator.pushNamedAndRemoveUntil(context, '/login', (e) => false);
     } catch (e) {
+      callBack();
       var error = e.toString();
       var snackBar = snackBarWidget(
           Row(
@@ -245,8 +241,7 @@ class Authentication {
       await _auth.signOut();
       SharedPreferences prfs = await SharedPreferences.getInstance();
       prfs.remove('email');
-      //prfs.remove('password');
-      // prfs.remove('role');
+      prfs.remove('role');
       Navigator.pushNamedAndRemoveUntil(
           context, '/signIn', (Route<dynamic> route) => false);
     } catch (e) {

@@ -35,7 +35,9 @@
 // };
 
 import 'package:flutter/material.dart';
+import 'package:shop_app/admin/adminHomePage.dart';
 import 'package:shop_app/pages/homePage.dart';
+import 'package:shop_app/pages/passwordReset.dart';
 import 'package:shop_app/pages/signUp.dart';
 import 'package:shop_app/pages/signIn.dart';
 
@@ -51,11 +53,11 @@ class RouteGenerator {
       case '/homePage':
         return MaterialPageRoute(builder: (context) => HomePage());
 
-      // case '/login':
-      //   return MaterialPageRoute(builder: (context) => LoginPage());
+      case '/adminPanel':
+        return MaterialPageRoute(builder: (context) => AdminPanel());
 
-      // case '/doctor':
-      //   return MaterialPageRoute(builder: (context) => Doctors());
+      case '/resetPassword':
+        return MaterialPageRoute(builder: (context) => PasswordReset());
 
       // //PAGES UNIQUE TO ADMIN
 
