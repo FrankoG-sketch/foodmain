@@ -1,34 +1,15 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_app/admin/adminHomePage.dart';
-// import 'package:get/get.dart';
 import 'package:shop_app/pages/homePage.dart';
 import 'package:shop_app/pages/signIn.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-//import 'package:shop_app/Users/Supermarket/home.dart';
 import 'package:shop_app/utils/routes.dart';
-//import 'package:shop_app/screens/home/home_screen.dart';
-//import 'package:shop_app/screens/profile/profile_screen.dart';
-// import 'package:shop_app/Authentication/splash/splash_screen.dart';
-//import 'package:firebase_core/firebase_core.dart';
-
-// import 'constants/firebase.dart';
-// import 'controllers/appController.dart';
-// import 'controllers/authController.dart';
-// import 'controllers/cart_controller.dart';
-// import 'controllers/products_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final title = "Food";
   await Firebase.initializeApp();
-  // await initialization.then((value) {
-  //   Get.put(AppController());
-  //   Get.put(UserController());
-  //   Get.put(ProducsController());
-  //   Get.put(CartController());
-  //});
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   String login = sharedPreferences.getString('email');
   String role = sharedPreferences.getString('role');
@@ -63,7 +44,6 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Color(0xFF40BF73),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          // backgroundColor: Color(0xFF0B58BB),
           type: BottomNavigationBarType.fixed,
           elevation: 17.0,
           selectedItemColor: Color(0xFF40BF73),
