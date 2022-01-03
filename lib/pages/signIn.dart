@@ -23,13 +23,13 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Stack(alignment: Alignment.center, children: [
-      BackgroundImage(),
-      Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SingleChildScrollView(
-          reverse: true,
-          child: SafeArea(
+    return SafeArea(
+      child: Stack(alignment: Alignment.center, children: [
+        BackgroundImage(),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          body: SingleChildScrollView(
+            reverse: true,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -203,7 +203,7 @@ class _SignInState extends State<SignIn> {
             ),
           ),
         ),
-      ),
-    ]);
+      ]),
+    );
   }
 }

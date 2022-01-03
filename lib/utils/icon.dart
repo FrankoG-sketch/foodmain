@@ -11,11 +11,11 @@ class IconWidget {
 }
 
 final starchyFood =
-    IconWidget(icon: Icons.card_giftcard_outlined, name: "Starchy Food");
+    IconWidget(icon: Icons.card_giftcard_outlined, name: "Starchy\n Food");
 
 final protein = IconWidget(icon: Icons.card_giftcard_outlined, name: "Protein");
 final fruits =
-    IconWidget(icon: Icons.card_giftcard_outlined, name: "Fruits and Veg");
+    IconWidget(icon: Icons.card_giftcard_outlined, name: "Fruits and\n Veg");
 
 final dairy = IconWidget(icon: Icons.card_giftcard_outlined, name: "Dairy");
 

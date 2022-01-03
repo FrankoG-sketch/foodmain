@@ -39,6 +39,13 @@ InputDecoration textFieldInputDecorationForLoginPagePassword(
   );
 }
 
+Widget structurePageHomePage(Widget widget) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 15),
+    child: widget,
+  );
+}
+
 class BackgroundImage extends StatelessWidget {
   const BackgroundImage({
     Key key,

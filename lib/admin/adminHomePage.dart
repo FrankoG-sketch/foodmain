@@ -10,9 +10,7 @@ class _AdminPanelState extends State<AdminPanel> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Text("Admin HomePage"),
-      ),
+      body: Center(child: Text("Admin Panel")),
       drawer: Drawer(
         child: Center(
           child: ListView(

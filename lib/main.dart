@@ -62,6 +62,14 @@ class MyApp extends StatelessWidget {
       home: getState(login),
       theme: ThemeData(
         primaryColor: Color(0xFF40BF73),
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          // backgroundColor: Color(0xFF0B58BB),
+          type: BottomNavigationBarType.fixed,
+          elevation: 17.0,
+          selectedItemColor: Color(0xFF40BF73),
+          selectedIconTheme: IconThemeData(color: Color(0xFF40BF73)),
+          selectedLabelStyle: TextStyle(color: Colors.white),
+        ),
       ),
       initialRoute: "/",
       onGenerateRoute: RouteGenerator.generateRoute,
