@@ -3,28 +3,35 @@ import 'package:flutter/material.dart';
 class IconWidget {
   IconData icon;
   String name;
+  String tag;
 
   IconWidget({
     this.icon,
     this.name,
+    this.tag,
   });
 }
 
-final starchyFood =
-    IconWidget(icon: Icons.card_giftcard_outlined, name: "Starchy\n Food");
+final all =
+    IconWidget(icon: Icons.card_giftcard_outlined, name: "All", tag: "All");
 
-final protein = IconWidget(icon: Icons.card_giftcard_outlined, name: "Protein");
-final fruits =
-    IconWidget(icon: Icons.card_giftcard_outlined, name: "Fruits and\n Veg");
+final starchyFood = IconWidget(
+    icon: Icons.card_giftcard_outlined, name: "Starchy\n Food", tag: "Starch");
 
-final dairy = IconWidget(icon: Icons.card_giftcard_outlined, name: "Dairy");
+final protein = IconWidget(
+    icon: Icons.card_giftcard_outlined, name: "Protein", tag: "Protein");
+final fruits = IconWidget(
+    icon: Icons.card_giftcard_outlined,
+    name: "Fruits and\n Veg",
+    tag: "FruitsAndVeg");
 
-final more = IconWidget(icon: Icons.card_giftcard_outlined, name: "More");
+final dairy =
+    IconWidget(icon: Icons.card_giftcard_outlined, name: "Dairy", tag: "Diary");
 
 List iconItems = [
+  all,
   starchyFood,
   protein,
   fruits,
   dairy,
-  more,
 ];

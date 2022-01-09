@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:shop_app/admin/adminHomePage.dart';
 import 'package:shop_app/pages/homePage.dart';
 import 'package:shop_app/pages/signIn.dart';
@@ -17,11 +18,15 @@ Future<void> main() async {
   print("login: " + login.toString());
   print("role: " + role.toString());
 
-  runApp(MyApp(
-    title: title,
-    login: login,
-    role: role,
-  ));
+  runApp(
+    Phoenix(
+      child: MyApp(
+        title: title,
+        login: login,
+        role: role,
+      ),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

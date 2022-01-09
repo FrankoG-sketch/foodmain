@@ -39,18 +39,10 @@ class _HomePageState extends State<HomePage> {
             label: "",
             icon: Icon(Icons.home),
           ),
-          // BottomNavigationBarItem(
-          //   label: "",
-          //   icon: Icon(Icons.ten_mp_outlined),
-          // ),
           BottomNavigationBarItem(
             label: "",
             icon: Icon(Icons.shopping_cart),
           ),
-          // BottomNavigationBarItem(
-          //   label: "",
-          //   icon: Icon(Icons.comment),
-          // ),
           BottomNavigationBarItem(
             label: "",
             icon: Icon(Icons.account_circle),
@@ -84,13 +76,20 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class HomeContent extends StatelessWidget {
+class HomeContent extends StatefulWidget {
   const HomeContent({
     Key key,
     @required this.size,
   }) : super(key: key);
 
   final Size size;
+
+  @override
+  State<HomeContent> createState() => _HomeContentState();
+}
+
+class _HomeContentState extends State<HomeContent> {
+  ProductModel products;
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +109,6 @@ class HomeContent extends StatelessWidget {
                       .doc(snapshot.data)
                       .snapshots(),
                   builder: (context, AsyncSnapshot firestore) {
-                    //  User user = FirebaseAuth.instance.currentUser;
                     return !firestore.hasData
                         ? Center(child: CircularProgressIndicator())
                         : SingleChildScrollView(
@@ -162,7 +160,7 @@ class HomeContent extends StatelessWidget {
           SliverToBoxAdapter(
             child: structurePageHomePage(
               Container(
-                height: size.height * 0.15,
+                height: widget.size.height * 0.15,
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor,
                   borderRadius: BorderRadius.all(
@@ -193,7 +191,7 @@ class HomeContent extends StatelessWidget {
           SliverToBoxAdapter(
             child: structurePageHomePage(
               Container(
-                height: size.height * 0.15,
+                height: widget.size.height * 0.15,
                 width: double.infinity,
                 child: ListView.builder(
                   physics: BouncingScrollPhysics(),
@@ -202,7 +200,6 @@ class HomeContent extends StatelessWidget {
                   itemBuilder: (context, index) {
                     return Container(
                       padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                      // margin: const EdgeInsets.only(left: 5.0, right: 5.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -212,8 +209,8 @@ class HomeContent extends StatelessWidget {
                                   BorderRadius.all(Radius.circular(10)),
                               color: Colors.orange[100],
                             ),
-                            height: size.height * 0.06,
-                            width: size.width * 0.13,
+                            height: widget.size.height * 0.06,
+                            width: widget.size.width * 0.13,
                             child: Icon(iconItems[index].icon,
                                 color: Colors.red[200]),
                           ),
@@ -235,41 +232,7 @@ class HomeContent extends StatelessWidget {
               ),
             ),
           ),
-          SliverToBoxAdapter(
-            child: structurePageHomePage(
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Special for you",
-                    style: TextStyle(fontSize: 19.0),
-                  ),
-                  TextButton(child: Text("See more"), onPressed: () {}),
-                ],
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Container(
-              height: size.height * 0.10,
-              width: double.infinity,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: specialImagePaths.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                    padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(20.0),
-                      ),
-                    ),
-                    child: Image.asset(specialImagePaths[index].imgPath),
-                  );
-                },
-              ),
-            ),
-          ),
+          SliverPadding(padding: const EdgeInsets.only(top: 10.0)),
           SliverToBoxAdapter(
             child: structurePageHomePage(
               Row(
@@ -279,7 +242,11 @@ class HomeContent extends StatelessWidget {
                     "Popular Products",
                     style: TextStyle(fontSize: 19.0),
                   ),
-                  TextButton(child: Text("See more"), onPressed: () {}),
+                  TextButton(
+                      child: Text("See more"),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/productPage');
+                      }),
                 ],
               ),
             ),
@@ -335,7 +302,7 @@ class HomeContent extends StatelessWidget {
                         ],
                       );
                     return Container(
-                      height: size.height * 0.20,
+                      height: widget.size.height * 0.25,
                       width: double.infinity,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
@@ -344,6 +311,7 @@ class HomeContent extends StatelessWidget {
                           DocumentSnapshot keyword = snapshot.data.docs[index];
                           ProductModel products = ProductModel.fromJson(
                               keyword.data() as Map<String, dynamic>);
+
                           return InkWell(
                             onTap: () => Navigator.pushNamed(
                               context,
@@ -355,7 +323,7 @@ class HomeContent extends StatelessWidget {
                               ),
                             ),
                             child: Container(
-                              width: size.width * 0.35,
+                              width: widget.size.width * 0.35,
                               padding: const EdgeInsets.only(
                                   left: 15.0, right: 15.0),
                               margin: const EdgeInsets.only(
@@ -429,7 +397,7 @@ class HomeContent extends StatelessWidget {
             ),
           ),
           SliverPadding(
-            padding: const EdgeInsets.only(top: 100.0),
+            padding: const EdgeInsets.only(top: 150.0),
           ),
         ],
       ),

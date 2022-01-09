@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -22,8 +23,8 @@ class _CartState extends State<Cart> {
             builder: (context, AsyncSnapshot snapshot) {
               return StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
-                    .collection('userInformation')
-                    .doc(snapshot.data)
+                    //.collection('userInformation')
+                    // .doc(snapshot.data)
                     .collection('Cart')
                     .snapshots(),
                 builder: (BuildContext context,
@@ -54,8 +55,28 @@ class CartList extends StatefulWidget {
 }
 
 class _CartListState extends State<CartList> {
+  double value = 0.0;
+  double total = 0.0;
+  FirebaseAuth _auth = FirebaseAuth.instance;
   final formatCurrency = new NumberFormat.simpleCurrency();
   double mean = 0.0;
+
+  Future<void> _getUid() async {
+    var uid = await getCurrentUID();
+    setState(() {
+      uidKey = uid;
+    });
+  }
+
+  var uidKey;
+  var uid;
+
+  @override
+  void initState() {
+    _getUid();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -63,194 +84,204 @@ class _CartListState extends State<CartList> {
         Expanded(
           child: FutureBuilder(
             future: getCurrentUID(),
-            builder: (context, AsyncSnapshot snapshot) {
+            builder: (context, snapshot) {
               return StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
-                    .collection('userInformation')
-                    .doc(snapshot.data)
+                    // .collection('userInformation')
+                    // .doc(snapshot.data)
                     .collection('Cart')
+                    .where('uid', isEqualTo: uidKey)
                     .snapshots(),
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.data == null)
-                    return Center(child: CircularProgressIndicator());
-                  double value = 0.0;
-                  double total = 0.0;
-                  return Column(
-                    children: [
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: IconButton(
-                          icon: Icon(Icons.chevron_left),
-                          iconSize: 40.0,
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
+                  if (snapshot.connectionState == ConnectionState.waiting)
+                    return Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                          SizedBox(width: 15.0),
+                          Text("Loading....."),
+                        ],
                       ),
-                      Expanded(
-                        child: Scrollbar(
-                          child: ListView.separated(
-                            physics: BouncingScrollPhysics(),
-                            itemCount: snapshot.data.docs.length,
-                            separatorBuilder: (context, index) {
-                              return Divider();
-                            },
-                            itemBuilder: (context, index) {
-                              DocumentSnapshot point =
-                                  snapshot.data.docs[index];
-                              double myPrices = double.parse(
-                                point['price'].toString().replaceAll(",", ""),
-                              );
-                              int myQuantity = int.parse(
-                                point['Quantity']
-                                    .toString()
-                                    .replaceAll(",", ""),
-                              );
+                    );
+                  else if (snapshot.connectionState == ConnectionState.active) {
+                    return Column(
+                      children: [
+                        Expanded(
+                          child: Scrollbar(
+                            child: ListView.separated(
+                              physics: BouncingScrollPhysics(),
+                              itemCount: snapshot.data.docs.length,
+                              separatorBuilder: (context, index) {
+                                return Divider();
+                              },
+                              itemBuilder: (context, index) {
+                                DocumentSnapshot point =
+                                    snapshot.data.docs[index];
 
-                              value = myPrices * myQuantity;
+                                // if (point.id == _auth.currentUser.uid) {
+                                //   return Container(height: 0);
+                                // }
+                                double myPrices = double.parse(
+                                  point['price'].toString().replaceAll(",", ""),
+                                );
+                                int myQuantity = int.parse(
+                                  point['Quantity']
+                                      .toString()
+                                      .replaceAll(",", ""),
+                                );
 
-                              total += value;
+                                value = myPrices * myQuantity;
 
-                              mean = total;
-                              print(mean);
+                                total += value;
 
-                              return SingleChildScrollView(
-                                child: Container(
-                                  child: InkWell(
-                                    onTap: () {
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return PopUp(
-                                              document:
-                                                  snapshot.data.docs[index],
-                                            );
-                                          });
-                                    },
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Image(
-                                              image: NetworkImage(
-                                                  '${point['img']}'),
-                                              loadingBuilder:
-                                                  (context, child, progress) {
-                                                return progress == null
-                                                    ? child
-                                                    : CircularProgressIndicator();
-                                              },
-                                              errorBuilder:
-                                                  (BuildContext context,
-                                                      Object exception,
-                                                      StackTrace stackTrace) {
-                                                return Padding(
-                                                  padding: const EdgeInsets.all(
-                                                      18.0),
-                                                  child: Icon(
-                                                    Icons.broken_image_outlined,
-                                                    size: 50,
-                                                  ),
-                                                );
-                                              },
-                                              fit: BoxFit.cover,
-                                              height: 50.0,
-                                              width: 50.0,
-                                            ),
-                                            Text(
-                                              '${point['name']}',
-                                              style: TextStyle(
-                                                fontFamily: 'PlayfairDisplay',
-                                                fontSize: 16.0,
+                                mean = total;
+                                print(mean);
+
+                                return SingleChildScrollView(
+                                  child: Container(
+                                    child: InkWell(
+                                      onTap: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return PopUp(
+                                                document:
+                                                    snapshot.data.docs[index],
+                                              );
+                                            });
+                                      },
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Image(
+                                                image: NetworkImage(
+                                                    '${point['img']}'),
+                                                loadingBuilder:
+                                                    (context, child, progress) {
+                                                  return progress == null
+                                                      ? child
+                                                      : CircularProgressIndicator();
+                                                },
+                                                errorBuilder:
+                                                    (BuildContext context,
+                                                        Object exception,
+                                                        StackTrace stackTrace) {
+                                                  return Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            18.0),
+                                                    child: Icon(
+                                                      Icons
+                                                          .broken_image_outlined,
+                                                      size: 50,
+                                                    ),
+                                                  );
+                                                },
+                                                fit: BoxFit.cover,
+                                                height: 50.0,
+                                                width: 50.0,
                                               ),
-                                            ),
-                                            Text(
-                                              '${formatCurrency.format(myPrices)}',
-                                              style: TextStyle(
-                                                fontFamily:
-                                                    'PlayfairDisplay - Regular',
-                                                fontSize: 16.0,
-                                              ),
-                                            ),
-                                            Row(
-                                              children: [
-                                                Text("x"),
-                                                Text(
-                                                  myQuantity.toString(),
-                                                  style: TextStyle(
-                                                    fontSize: 16.0,
-                                                    fontFamily:
-                                                        'PlayfairDisplay - Regular',
-                                                  ),
+                                              Text(
+                                                '${point['name']}',
+                                                style: TextStyle(
+                                                  fontFamily: 'PlayfairDisplay',
+                                                  fontSize: 16.0,
                                                 ),
-                                              ],
-                                            ),
-                                          ],
-                                        )
-                                      ],
+                                              ),
+                                              Text(
+                                                '${formatCurrency.format(myPrices)}',
+                                                style: TextStyle(
+                                                  fontFamily:
+                                                      'PlayfairDisplay - Regular',
+                                                  fontSize: 16.0,
+                                                ),
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Text("x"),
+                                                  Text(
+                                                    myQuantity.toString(),
+                                                    style: TextStyle(
+                                                      fontSize: 16.0,
+                                                      fontFamily:
+                                                          'PlayfairDisplay - Regular',
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                      Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            TextButton(
-                              style: TextButton.styleFrom(
-                                primary: Colors.grey[700],
-                              ),
-                              onPressed: () {
-                                setState(
-                                  () {
-                                    mean = total;
-                                  },
                                 );
                               },
-                              child: Text(
-                                "Click for total:",
-                                style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                              ),
                             ),
-                            Text(
-                              '${formatCurrency.format(mean)}',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16.0),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width - 50,
-                        height: MediaQuery.of(context).size.height / 10,
-                        child: MaterialButton(
-                          color: Theme.of(context).primaryColor,
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return CheckOutDialog();
-                                });
-                          },
-                          child: Text(
-                            "Check Out",
-                            style: TextStyle(color: Colors.white),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 15.0,
-                      ),
-                    ],
+                        Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  primary: Colors.grey[700],
+                                ),
+                                onPressed: () {
+                                  setState(
+                                    () {
+                                      mean = total;
+                                    },
+                                  );
+                                },
+                                child: Text(
+                                  "Click for total:",
+                                  style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                '${formatCurrency.format(mean)}',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16.0),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width - 50,
+                          height: MediaQuery.of(context).size.height / 10,
+                          child: MaterialButton(
+                            color: Theme.of(context).primaryColor,
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return CheckOutDialog();
+                                  });
+                            },
+                            child: Text(
+                              "Check Out",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 15.0,
+                        ),
+                      ],
+                    );
+                  }
+                  return Center(
+                    child: Text("Nothing"),
                   );
                 },
               );
@@ -309,11 +340,9 @@ class _PopUpState extends State<PopUp> with SingleTickerProviderStateMixin {
     return AlertDialog(
       title: Text(
         "Remove Item from Cart?",
-        style: TextStyle(fontFamily: 'PlayfairDisplay - Regular'),
       ),
       content: Text(
         "Are you sure you want to remove this item from your cart?",
-        style: TextStyle(fontFamily: 'PlayfairDisplay - Regular'),
       ),
       actions: [
         cancelButton,

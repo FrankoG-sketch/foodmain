@@ -112,9 +112,9 @@ class _ProductDetailsState extends State<ProductDetails> {
                                                                 DateTime.now();
                                                             FirebaseFirestore
                                                                 .instance
-                                                                .collection(
-                                                                    'userInformation')
-                                                                .doc(uid)
+                                                                // .collection(
+                                                                //     'userInformation')
+                                                                // .doc(uid)
                                                                 .collection(
                                                                     'Cart')
                                                                 .add(
@@ -128,6 +128,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                                                 "Quantity": num
                                                                     .toString(),
                                                                 "Date": date,
+                                                                "uid": uid,
                                                               },
                                                             ).then((value) {
                                                               Fluttertoast.showToast(
