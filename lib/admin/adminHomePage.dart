@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:shop_app/Authentication/auth.dart';
@@ -13,7 +12,6 @@ class AdminPanel extends StatefulWidget {
 class _AdminPanelState extends State<AdminPanel> {
   double value = 0.0;
   double total = 0.0;
-  FirebaseAuth _auth = FirebaseAuth.instance;
   final formatCurrency = new NumberFormat.simpleCurrency();
   double mean = 0.0;
   bool tap = false;

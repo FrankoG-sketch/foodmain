@@ -93,6 +93,7 @@ class _HomeContentState extends State<HomeContent> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return SafeArea(
       child: CustomScrollView(
         slivers: [
@@ -233,6 +234,45 @@ class _HomeContentState extends State<HomeContent> {
             ),
           ),
           SliverPadding(padding: const EdgeInsets.only(top: 10.0)),
+          SliverToBoxAdapter(
+            child: structurePageHomePage(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Special for you",
+                    style: TextStyle(fontSize: 19.0),
+                  ),
+                  TextButton(
+                    child: Text("See more"),
+                    onPressed: () =>
+                        Navigator.pushNamed(context, '/specialitems'),
+                  )
+                ],
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Container(
+              height: size.height * 0.10,
+              width: double.infinity,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: specialImagePaths.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(20.0),
+                      ),
+                    ),
+                    child: Image.asset(specialImagePaths[index].imgPath),
+                  );
+                },
+              ),
+            ),
+          ),
           SliverToBoxAdapter(
             child: structurePageHomePage(
               Row(

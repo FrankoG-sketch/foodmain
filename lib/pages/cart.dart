@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -57,7 +56,6 @@ class CartList extends StatefulWidget {
 class _CartListState extends State<CartList> {
   double value = 0.0;
   double total = 0.0;
-  FirebaseAuth _auth = FirebaseAuth.instance;
   final formatCurrency = new NumberFormat.simpleCurrency();
   double mean = 0.0;
 
