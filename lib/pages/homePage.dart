@@ -244,7 +244,11 @@ class HomeContent extends StatelessWidget {
                     "Special for you",
                     style: TextStyle(fontSize: 19.0),
                   ),
-                  TextButton(child: Text("See more"), onPressed: () {}),
+                  TextButton(
+                    child: Text("See more"),
+                    onPressed: () =>
+                        Navigator.pushNamed(context, '/specialitems'),
+                  )
                 ],
               ),
             ),
@@ -279,7 +283,11 @@ class HomeContent extends StatelessWidget {
                     "Popular Products",
                     style: TextStyle(fontSize: 19.0),
                   ),
-                  TextButton(child: Text("See more"), onPressed: () {}),
+                  TextButton(
+                    child: Text("See more"),
+                    onPressed: () =>
+                        Navigator.pushNamed(context, '/popularitems'),
+                  ),
                 ],
               ),
             ),
