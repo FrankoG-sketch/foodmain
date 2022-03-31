@@ -27,7 +27,7 @@ class RouteGenerator {
       case '/popularitems':
         return MaterialPageRoute(builder: (context) => Popularitems());
 
-      case '/specialitems':
+      case '/specialItems':
         return MaterialPageRoute(builder: (context) => Specialitems());
 
       case '/resetPassword':
@@ -37,10 +37,10 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (context) => ProductPage());
 
       case '/productDetails':
-        ProductDetails args = settings.arguments as ProductDetails;
+        ProductDetails? args = settings.arguments as ProductDetails?;
         return MaterialPageRoute(
           builder: (context) => ProductDetails(
-            heroTag: args.heroTag,
+            heroTag: args!.heroTag,
             name: args.name,
             price: args.price,
           ),
@@ -55,6 +55,9 @@ class RouteGenerator {
     return MaterialPageRoute(
       builder: (BuildContext builder) {
         return Scaffold(
+          appBar: AppBar(
+            title: Text("404 Error"),
+          ),
           body: Center(
             child: Text("Page not found....."),
           ),

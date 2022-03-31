@@ -1,13 +1,17 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/Authentication/auth.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shop_app/Model/productModel.dart';
 import 'package:shop_app/pages/cart.dart';
+import 'package:shop_app/pages/delivery.dart';
 import 'package:shop_app/pages/productDetails.dart';
 import 'package:shop_app/pages/profile.dart';
 import 'package:shop_app/utils/icon.dart';
-import 'package:shop_app/utils/special.dart';
 import 'package:shop_app/utils/widgets.dart';
 
 class HomePage extends StatefulWidget {
@@ -45,30 +49,20 @@ class _HomePageState extends State<HomePage> {
           ),
           BottomNavigationBarItem(
             label: "",
+            icon: Icon(Icons.delivery_dining_sharp),
+          ),
+          BottomNavigationBarItem(
+            label: "",
             icon: Icon(Icons.account_circle),
           ),
         ],
-      ),
-      drawer: Drawer(
-        child: Center(
-          child: ListView(
-            children: [
-              ListTile(
-                title: Text("Logout"),
-                trailing: Icon(Icons.exit_to_app),
-                onTap: () async {
-                  Authentication().signOut(context);
-                },
-              ),
-            ],
-          ),
-        ),
       ),
       body: PageView(
         controller: _pageController,
         children: [
           HomeContent(size: size),
           Cart(),
+          Delivery(),
           Profile(),
         ],
       ),
@@ -78,8 +72,8 @@ class _HomePageState extends State<HomePage> {
 
 class HomeContent extends StatefulWidget {
   const HomeContent({
-    Key key,
-    @required this.size,
+    Key? key,
+    required this.size,
   }) : super(key: key);
 
   final Size size;
@@ -89,7 +83,119 @@ class HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<HomeContent> {
-  ProductModel products;
+  ProductModel? products;
+
+  var fullName;
+  var firstName;
+
+  @override
+  void initState() {
+    super.initState();
+    getSharedPreferenceData();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (notification != null && android != null) {
+        showDialog(
+            context: context,
+            builder: (_) {
+              return AlertDialog(
+                title: Text(notification.title.toString()),
+                content: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          ConstrainedBox(
+                              constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.of(context).size.width * 0.60),
+                              child: Text(
+                                notification.body.toString(),
+                                style: TextStyle(fontSize: 12.0),
+                              )),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(
+                              'Ok',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              );
+            });
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen(
+      (RemoteMessage message) {
+        print('A new onMessageOpenedApp event was published');
+        RemoteNotification? notification = message.notification;
+        AndroidNotification? android = message.notification!.android;
+        if (notification != null && android != null) {
+          showDialog(
+            context: context,
+            builder: (_) {
+              return AlertDialog(
+                title: Text(notification.title.toString()),
+                content: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          ConstrainedBox(
+                              constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.of(context).size.width * 0.60),
+                              child: Text(
+                                notification.body.toString(),
+                                style: TextStyle(fontSize: 12.0),
+                              )),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(
+                              'Ok',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        }
+      },
+    );
+  }
+
+  getSharedPreferenceData() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+
+    setState(() {
+      fullName = sharedPreferences.getString('name');
+      var names = fullName.split(" ");
+      firstName = names[0];
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +233,7 @@ class _HomeContentState extends State<HomeContent> {
                                         Wrap(
                                           children: [
                                             Text(
-                                              "Welcome ${firestore.data['FullName']}",
+                                              "Welcome $firstName",
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.bold),
@@ -137,8 +243,8 @@ class _HomeContentState extends State<HomeContent> {
                                         ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(81.0),
-                                          child: SvgPicture.asset(
-                                            'assets/images/profile.svg',
+                                          child: Image.asset(
+                                            'assets/images/profile.png',
                                             height: 60,
                                             width: 60,
                                           ),
@@ -233,7 +339,6 @@ class _HomeContentState extends State<HomeContent> {
               ),
             ),
           ),
-          SliverPadding(padding: const EdgeInsets.only(top: 10.0)),
           SliverToBoxAdapter(
             child: structurePageHomePage(
               Row(
@@ -244,35 +349,147 @@ class _HomeContentState extends State<HomeContent> {
                     style: TextStyle(fontSize: 19.0),
                   ),
                   TextButton(
-                    child: Text("See more"),
-                    onPressed: () =>
-                        Navigator.pushNamed(context, '/specialitems'),
-                  )
+                      child: Text("See more"),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/specialItems');
+                      }),
                 ],
               ),
             ),
           ),
-          SliverToBoxAdapter(
-            child: Container(
-              height: size.height * 0.10,
-              width: double.infinity,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: specialImagePaths.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                    padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(20.0),
+          //SliverPadding(padding: const EdgeInsets.only(top: 2.0)),
+          FutureBuilder(
+            future: getCurrentUID(),
+            builder: (context, snapshot) {
+              return SliverToBoxAdapter(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('Special')
+                      .snapshots(),
+                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (!snapshot.hasData)
+                      return Center(child: CircularProgressIndicator());
+                    else if (snapshot.data!.docs.isEmpty)
+                      return Column(
+                        children: <Widget>[
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).canvasColor,
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(75),
+                                ),
+                              ),
+                              child: ClipPath(
+                                clipper: ShapeBorderClipper(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(75),
+                                    ),
+                                  ),
+                                ),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  height: MediaQuery.of(context).size.height,
+                                  child: Column(
+                                    children: <Widget>[
+                                      SizedBox(height: 50.0),
+                                      Center(
+                                        child:
+                                            Text("Opps!!!! no goods available"),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    return structurePageHomePage(
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   children: [
+                      //     Text(
+                      //       "Special for you",
+                      //       style: TextStyle(fontSize: 19.0),
+                      //     ),
+                      //     TextButton(
+                      //       child: Text("See more"),
+                      //       onPressed: () => Navigator.pushNamed(
+                      //           context, '/specialitems'),
+                      //     )
+                      //   ],
+                      // ),
+
+                      Container(
+                        height: widget.size.height * 0.25,
+                        width: double.infinity,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (context, index) {
+                            DocumentSnapshot keyword =
+                                snapshot.data!.docs[index];
+                            ProductModel products = ProductModel.fromJson(
+                                keyword.data() as Map<String, dynamic>);
+
+                            return InkWell(
+                              onTap: () =>
+                                  Navigator.pushNamed(context, '/specialItems'),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0, vertical: 20.0),
+                                child: SizedBox(
+                                  // width: size.width * 0.60,
+                                  // height: size.height * 0.02,
+                                  child: Card(
+                                    child: Container(
+                                      child: Hero(
+                                        tag: products.imgPath!,
+                                        child: Image(
+                                          image: NetworkImage(
+                                            products.imgPath!,
+                                          ),
+                                          loadingBuilder:
+                                              (context, child, progress) {
+                                            return progress == null
+                                                ? child
+                                                : Center(
+                                                    child:
+                                                        CircularProgressIndicator());
+                                          },
+                                          errorBuilder: (BuildContext context,
+                                              Object exception,
+                                              StackTrace? stackTrace) {
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.all(18.0),
+                                              child: Icon(
+                                                  Icons.broken_image_outlined),
+                                            );
+                                          },
+                                          fit: BoxFit.cover,
+                                          height: size.height * 0.15,
+                                          width: size.width * 0.50,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                    child: Image.asset(specialImagePaths[index].imgPath),
-                  );
-                },
-              ),
-            ),
+                    );
+                  },
+                ),
+              );
+            },
           ),
+
+          SliverPadding(padding: const EdgeInsets.only(top: 30.0)),
           SliverToBoxAdapter(
             child: structurePageHomePage(
               Row(
@@ -291,7 +508,6 @@ class _HomeContentState extends State<HomeContent> {
               ),
             ),
           ),
-          SliverPadding(padding: const EdgeInsets.only(top: 20.0)),
           SliverToBoxAdapter(
             child: FutureBuilder(
               future: getCurrentUID(),
@@ -304,7 +520,7 @@ class _HomeContentState extends State<HomeContent> {
                       AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (!snapshot.hasData)
                       return Center(child: CircularProgressIndicator());
-                    else if (snapshot.data.docs.isEmpty)
+                    else if (snapshot.data!.docs.isEmpty)
                       return Column(
                         children: <Widget>[
                           Expanded(
@@ -346,9 +562,9 @@ class _HomeContentState extends State<HomeContent> {
                       width: double.infinity,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: snapshot.data.docs.length,
+                        itemCount: snapshot.data!.docs.length,
                         itemBuilder: (context, index) {
-                          DocumentSnapshot keyword = snapshot.data.docs[index];
+                          DocumentSnapshot keyword = snapshot.data!.docs[index];
                           ProductModel products = ProductModel.fromJson(
                               keyword.data() as Map<String, dynamic>);
 
@@ -362,69 +578,74 @@ class _HomeContentState extends State<HomeContent> {
                                 price: products.price,
                               ),
                             ),
-                            child: Container(
-                              width: widget.size.width * 0.35,
-                              padding: const EdgeInsets.only(
-                                  left: 15.0, right: 15.0),
-                              margin: const EdgeInsets.only(
-                                  left: 15.0, right: 15.0),
-                              decoration: BoxDecoration(
-                                  color: Theme.of(context).cardColor,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(20))),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    child: Hero(
-                                      tag: products.imgPath,
-                                      child: Image(
-                                        image: NetworkImage(
-                                          products.imgPath,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12.0),
+                              child: SizedBox(
+                                width: widget.size.width * 0.35,
+                                child: Card(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        child: Hero(
+                                          tag: products.imgPath!,
+                                          child: Image(
+                                            image: NetworkImage(
+                                              products.imgPath!,
+                                            ),
+                                            loadingBuilder:
+                                                (context, child, progress) {
+                                              return progress == null
+                                                  ? child
+                                                  : Center(
+                                                      child:
+                                                          CircularProgressIndicator());
+                                            },
+                                            errorBuilder: (BuildContext context,
+                                                Object exception,
+                                                StackTrace? stackTrace) {
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.all(18.0),
+                                                child: Icon(Icons
+                                                    .broken_image_outlined),
+                                              );
+                                            },
+                                            fit: BoxFit.contain,
+                                            height: 75.0,
+                                            width: 75.0,
+                                          ),
                                         ),
-                                        loadingBuilder:
-                                            (context, child, progress) {
-                                          return progress == null
-                                              ? child
-                                              : CircularProgressIndicator();
-                                        },
-                                        errorBuilder: (BuildContext context,
-                                            Object exception,
-                                            StackTrace stackTrace) {
-                                          return Padding(
-                                            padding: const EdgeInsets.all(18.0),
-                                            child: Icon(
-                                                Icons.broken_image_outlined),
-                                          );
-                                        },
-                                        fit: BoxFit.cover,
-                                        height: 75.0,
-                                        width: 75.0,
                                       ),
-                                    ),
-                                  ),
-                                  SizedBox(height: 15.0),
-                                  Row(
-                                    children: [
-                                      Text(products.name),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Icon(
-                                        Icons.attach_money_sharp,
-                                        color: Theme.of(context).primaryColor,
+                                      SizedBox(height: 15.0),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(products.name!),
+                                        ],
                                       ),
-                                      Text(
-                                        products.price,
-                                        style: TextStyle(
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.attach_money_sharp,
                                             color:
-                                                Theme.of(context).primaryColor),
-                                      ),
+                                                Theme.of(context).primaryColor,
+                                          ),
+                                          Text(
+                                            products.price!,
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .primaryColor),
+                                          ),
+                                        ],
+                                      )
                                     ],
-                                  )
-                                ],
+                                  ),
+                                ),
                               ),
                             ),
                           );

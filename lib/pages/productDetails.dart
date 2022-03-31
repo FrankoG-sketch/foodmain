@@ -11,7 +11,7 @@ class ProductDetails extends StatefulWidget {
   final name;
   final price;
 
-  const ProductDetails({Key key, this.heroTag, this.name, this.price})
+  const ProductDetails({Key? key, this.heroTag, this.name, this.price})
       : super(key: key);
 
   @override
@@ -201,8 +201,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                                               padding:
                                                   const EdgeInsets.all(8.0),
                                               child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                                // crossAxisAlignment:
+                                                //     CrossAxisAlignment.start,
                                                 children: <Widget>[
                                                   Text(
                                                     widget.name,
@@ -382,7 +382,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                         },
                                         errorBuilder: (BuildContext context,
                                             Object exception,
-                                            StackTrace stackTrace) {
+                                            StackTrace? stackTrace) {
                                           return Padding(
                                             padding: const EdgeInsets.all(18.0),
                                             child: Icon(

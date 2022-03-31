@@ -1,8 +1,8 @@
 class UserMod {
-  String uid;
-  String email;
-  String firstName;
-  String lastName;
+  String? uid;
+  String? email;
+  String? firstName;
+  String? lastName;
   var address;
 
   UserMod({this.uid, this.email, this.firstName, this.lastName, this.address});

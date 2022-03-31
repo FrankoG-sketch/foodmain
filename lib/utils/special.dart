@@ -1,5 +1,5 @@
 class Special {
-  String imgPath;
+  String? imgPath;
 
   Special({
     this.imgPath,

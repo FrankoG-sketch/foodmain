@@ -30,7 +30,7 @@ class _ProductPageState extends State<ProductPage> {
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (!snapshot.hasData)
                   return Center(child: CircularProgressIndicator());
-                else if (snapshot.data.docs.isEmpty)
+                else if (snapshot.data!.docs.isEmpty)
                   return Column(
                     children: <Widget>[
                       Expanded(
@@ -70,9 +70,9 @@ class _ProductPageState extends State<ProductPage> {
                   height: size.height,
                   width: double.infinity,
                   child: ListView.builder(
-                    itemCount: snapshot.data.docs.length,
+                    itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
-                      DocumentSnapshot keyword = snapshot.data.docs[index];
+                      DocumentSnapshot keyword = snapshot.data!.docs[index];
                       ProductModel products = ProductModel.fromJson(
                           keyword.data() as Map<String, dynamic>);
 
@@ -101,10 +101,10 @@ class _ProductPageState extends State<ProductPage> {
                               children: [
                                 Container(
                                   child: Hero(
-                                    tag: products.imgPath,
+                                    tag: products.imgPath!,
                                     child: Image(
                                       image: NetworkImage(
-                                        products.imgPath,
+                                        products.imgPath!,
                                       ),
                                       loadingBuilder:
                                           (context, child, progress) {
@@ -114,7 +114,7 @@ class _ProductPageState extends State<ProductPage> {
                                       },
                                       errorBuilder: (BuildContext context,
                                           Object exception,
-                                          StackTrace stackTrace) {
+                                          StackTrace? stackTrace) {
                                         return Padding(
                                           padding: const EdgeInsets.all(18.0),
                                           child:
@@ -130,7 +130,7 @@ class _ProductPageState extends State<ProductPage> {
                                 SizedBox(height: 15.0),
                                 Row(
                                   children: [
-                                    Text(products.name),
+                                    Text(products.name!),
                                   ],
                                 ),
                                 Row(
@@ -141,7 +141,7 @@ class _ProductPageState extends State<ProductPage> {
                                       color: Theme.of(context).primaryColor,
                                     ),
                                     Text(
-                                      products.price,
+                                      products.price!,
                                       style: TextStyle(
                                           color:
                                               Theme.of(context).primaryColor),

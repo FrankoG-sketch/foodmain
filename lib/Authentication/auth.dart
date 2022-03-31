@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,12 +9,18 @@ import 'package:shop_app/utils/widgets.dart';
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 getCurrentUser() async {
-  final User user = _auth.currentUser;
+  final User user = _auth.currentUser!;
   return user.uid;
 }
 
+getToken() async {
+  final token = await FirebaseMessaging.instance.getToken();
+  print('token: ' + token!);
+  return token;
+}
+
 Future<String> getCurrentUID() async {
-  return (_auth.currentUser).uid;
+  return _auth.currentUser!.uid;
 }
 
 class Authentication {
@@ -21,11 +28,36 @@ class Authentication {
   Future signUp(BuildContext context, String email, String name,
       String password, String address, VoidCallback callBack) async {
     try {
+      var token = await getToken();
       FocusScope.of(context).requestFocus(FocusNode());
-      UserCredential result = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
+      UserCredential result = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password)
+          .catchError((error) {
+        callBack();
+        var snackBar = snackBarWidget(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.80,
+                    ),
+                    child: Text(
+                        "The email address is already in use by another account.",
+                        style: TextStyle(color: Colors.white))),
+                Icon(
+                  Icons.error_outline_sharp,
+                  color: Colors.white,
+                )
+              ],
+            ),
+            Colors.red);
 
-      User user = result.user;
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      });
+      ;
+
+      User user = result.user!;
       var uid = await getCurrentUser();
       var date = DateTime.now();
       String blankPhoto =
@@ -49,6 +81,7 @@ class Authentication {
         'FullName': name,
         'email': email,
         'Date': date,
+        'token': token,
       };
 
       await FirebaseFirestore.instance
@@ -62,10 +95,10 @@ class Authentication {
           .collection("users")
           .add(userInformationObject);
 
-      await result.user.updateDisplayName(name);
-      await result.user.updateEmail(email);
-      await result.user.updatePhotoURL(blankPhoto);
-      await result.user.reload();
+      await result.user!.updateDisplayName(name);
+      await result.user!.updateEmail(email);
+      await result.user!.updatePhotoURL(blankPhoto);
+      await result.user!.reload();
       var snackBar = snackBarWidget(
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -121,29 +154,44 @@ class Authentication {
   //LOGIN.......................................................................
   Future signIn(BuildContext context, String email, String password,
       VoidCallback callBack) async {
-
-
     try {
       FocusScope.of(context).requestFocus(FocusNode());
 
+      var token = await getToken();
+
+      var date = DateTime.now();
+
+      var userTokenDataObject = {
+        'Email': email,
+        'Token': token,
+        'Date': date,
+      };
+
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
+
+      await FirebaseFirestore.instance
+          .collection('Users Token Data')
+          .doc(result.user!.uid)
+          .set(userTokenDataObject);
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('email', email);
 
       final DocumentSnapshot snapshot = await FirebaseFirestore.instance
           .collection("Users")
-          .doc(result.user.uid)
+          .doc(result.user!.uid)
           .get();
 
       String role = snapshot['role'];
 
-      print("role: " + role);
+      var fullName = snapshot['FullName'];
+
+      var address = snapshot['address'];
 
       FirebaseFirestore.instance
           .collection("Users")
-          .where("uid", isEqualTo: result.user.uid)
+          .where("uid", isEqualTo: result.user!.uid)
           .get()
           .then(
         (value) {
@@ -151,6 +199,9 @@ class Authentication {
             if (role == 'User') {
               Navigator.of(context).pushNamedAndRemoveUntil(
                   '/homePage', (Route<dynamic> route) => false);
+
+              prefs.setString('name', fullName);
+              prefs.setString('address', address);
             } else if (role == 'Admin') {
               Navigator.of(context).pushNamedAndRemoveUntil(
                   '/adminPanel', (Route<dynamic> route) => false);
@@ -242,6 +293,8 @@ class Authentication {
       SharedPreferences prfs = await SharedPreferences.getInstance();
       prfs.remove('email');
       prfs.remove('role');
+      prfs.remove('name');
+      prfs.remove('address');
       Navigator.pushNamedAndRemoveUntil(
           context, '/signIn', (Route<dynamic> route) => false);
     } catch (e) {

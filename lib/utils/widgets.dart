@@ -48,7 +48,7 @@ Widget structurePageHomePage(Widget widget) {
 
 class BackgroundImage extends StatelessWidget {
   const BackgroundImage({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

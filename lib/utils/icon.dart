@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class IconWidget {
-  IconData icon;
-  String name;
-  String tag;
+  IconData? icon;
+  String? name;
+  String? tag;
 
   IconWidget({
     this.icon,

@@ -63,12 +63,12 @@ class _AdminPanelState extends State<AdminPanel> {
                       child: Scrollbar(
                         child: ListView.separated(
                           physics: BouncingScrollPhysics(),
-                          itemCount: snapshot.data.docs.length,
+                          itemCount: snapshot.data!.docs.length,
                           separatorBuilder: (context, index) {
                             return Divider();
                           },
                           itemBuilder: (context, index) {
-                            DocumentSnapshot point = snapshot.data.docs[index];
+                            DocumentSnapshot point = snapshot.data!.docs[index];
 
                             double myPrices = double.parse(
                               point['price'].toString().replaceAll(",", ""),

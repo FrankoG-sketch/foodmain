@@ -12,9 +12,9 @@ class ProductModel {
     this.price,
   });
 
-  String imgPath;
-  String name;
-  String price;
+  String? imgPath;
+  String? name;
+  String? price;
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
         imgPath: json["img"],
