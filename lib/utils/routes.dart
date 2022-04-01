@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/admin/adminHomePage.dart';
+import 'package:shop_app/deliverPanel/delivery.dart';
 import 'package:shop_app/pages/Popular_items.dart';
+import 'package:shop_app/pages/deliveryCheckOut.dart';
 import 'package:shop_app/pages/homePage.dart';
 import 'package:shop_app/pages/passwordReset.dart';
 import 'package:shop_app/pages/productDetails.dart';
@@ -12,6 +14,17 @@ import 'package:shop_app/pages/special_items.dart';
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case '/deliveryPanel':
+        return MaterialPageRoute(builder: ((context) => DeliveryPanel()));
+
+      case '/delieveryCheckOut':
+        DeliveryCheckOut? args = settings.arguments as DeliveryCheckOut?;
+        return MaterialPageRoute(
+          builder: ((context) => DeliveryCheckOut(
+                documents: args!.documents,
+              )),
+        );
+
       case '/signUp':
         return MaterialPageRoute(builder: (context) => SignUp());
 

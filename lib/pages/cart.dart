@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:shop_app/Authentication/auth.dart';
+import 'package:shop_app/pages/deliveryCheckOut.dart';
 
 class Cart extends StatefulWidget {
   @override
@@ -14,6 +15,10 @@ class _CartState extends State<Cart> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        title: Text("Cart"),
+      ),
       body: Container(
         child: Padding(
           padding: const EdgeInsets.only(top: 50.0),
@@ -340,19 +345,23 @@ class _CartListState extends State<CartList> {
                                                       padding: const EdgeInsets
                                                               .symmetric(
                                                           vertical: 35.0),
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .end,
-                                                        children: [
-                                                          IconButton(
-                                                            onPressed: () =>
-                                                                Navigator.pop(
-                                                                    context),
-                                                            icon: Icon(
-                                                                Icons.close),
-                                                          ),
-                                                        ],
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                horizontal:
+                                                                    35.0),
+                                                        child: Wrap(
+                                                          children: [
+                                                            Text(
+                                                              "A fee of \$2500.00 JMD will be charged for each delivery",
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                            )
+                                                          ],
+                                                        ),
                                                       ),
                                                     ),
                                                     Container(
@@ -382,6 +391,8 @@ class _CartListState extends State<CartList> {
                                                                 .replaceAll(
                                                                     ",", ""),
                                                           );
+
+                                                          print(mean);
                                                           return Column(
                                                             children: [
                                                               SingleChildScrollView(
@@ -465,75 +476,47 @@ class _CartListState extends State<CartList> {
                                                         },
                                                       ),
                                                     ),
-                                                    MaterialButton(
-                                                        onPressed: () async {
-                                                          try {
-                                                            var uid =
-                                                                await getCurrentUID();
+                                                    SizedBox(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width -
+                                                              50,
+                                                      height:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .height /
+                                                              10,
+                                                      child: MaterialButton(
+                                                        color: Theme.of(context)
+                                                            .primaryColor,
+                                                        onPressed: () {
+                                                          final List<
+                                                                  DocumentSnapshot>
+                                                              documents =
+                                                              snapshot
+                                                                  .data!.docs;
 
-                                                            var date =
-                                                                DateTime.now();
-
-                                                            // FirebaseFirestore
-                                                            //     .instance
-                                                            //     .collection(
-                                                            //         "Cart")
-                                                            //     .get()
-                                                            //     .then(
-                                                            //   (value) {
-                                                            //     value.docs
-                                                            //         .forEach(
-                                                            //       (element) {
-                                                            //         element
-                                                            //             .data();
-                                                            //       },
-                                                            //     );
-                                                            //   },
-                                                            // );
-
-                                                            // await for (var messages
-                                                            //     in FirebaseFirestore
-                                                            //         .instance
-                                                            //         .collection(
-                                                            //             'Cart')
-                                                            //         .snapshots()) {
-                                                            //   for (var message
-                                                            //       in messages
-                                                            //           .docs
-                                                            //           .toList()) {
-                                                            //     print(message
-                                                            //         .data());
-                                                            //   }
-                                                            // }
-
-                                                            QuerySnapshot
-                                                                querySnapshot =
-                                                                await FirebaseFirestore
-                                                                    .instance
-                                                                    .collection(
-                                                                        "Cart")
-                                                                    .get();
-                                                            // Get data from docs and convert map to List
-                                                            final allData =
-                                                                querySnapshot
-                                                                    .docs
-                                                                    .map((doc) =>
-                                                                        doc.data())
-                                                                    .toList();
-                                                            //for a specific field
-                                                            // final allData =
-                                                            //     querySnapshot
-                                                            //         .docs
-                                                            //         .map((doc) =>
-                                                            //             doc.get(
-                                                            //                 'uid'))
-                                                            //         .toList();
-                                                            print(allData);
-                                                          } catch (e) {
-                                                            print(e);
-                                                          }
+                                                          Navigator.pushNamed(
+                                                            context,
+                                                            '/delieveryCheckOut',
+                                                            arguments:
+                                                                DeliveryCheckOut(
+                                                                    documents:
+                                                                        documents
+                                                                            .map((doc) {
+                                                              return doc.data();
+                                                            }).toList()),
+                                                          );
                                                         },
-                                                        child: Text("add")),
+                                                        child: Text(
+                                                          "Deliver to me",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        ),
+                                                      ),
+                                                    ),
                                                   ],
                                                 );
                                               },
@@ -579,14 +562,6 @@ class _CartListState extends State<CartList> {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 35.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: Icon(Icons.close))
-                  ],
-                ),
               ),
               bulletins(
                   "Standard Shipping: Standard shipping is typically the default checkout setting. Your item(s) are expected to be" +
@@ -767,10 +742,9 @@ class _CheckOutDialogState extends State<CheckOutDialog>
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     IconButton(
-                        icon: Icon(Icons.close),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        })
+                      onPressed: () => Navigator.pop(context),
+                      icon: Icon(Icons.close),
+                    ),
                   ],
                 ),
                 Column(

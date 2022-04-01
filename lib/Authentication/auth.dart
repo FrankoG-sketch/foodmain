@@ -183,34 +183,47 @@ class Authentication {
           .doc(result.user!.uid)
           .get();
 
-      String role = snapshot['role'];
+      if (snapshot.exists) {
+        Map<String, dynamic>? fetchDoc =
+            snapshot.data() as Map<String, dynamic>?;
+        String role = fetchDoc?['role'];
 
-      var fullName = snapshot['FullName'];
+        var fullName = fetchDoc?['FullName'];
 
-      var address = snapshot['address'];
+        var address = fetchDoc?['address'];
 
-      FirebaseFirestore.instance
-          .collection("Users")
-          .where("uid", isEqualTo: result.user!.uid)
-          .get()
-          .then(
-        (value) {
-          if (role.isNotEmpty) {
-            if (role == 'User') {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/homePage', (Route<dynamic> route) => false);
+        print("role: $role");
 
-              prefs.setString('name', fullName);
-              prefs.setString('address', address);
-            } else if (role == 'Admin') {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/adminPanel', (Route<dynamic> route) => false);
+        print('fullName: $fullName');
+
+        print("address: $address");
+
+        FirebaseFirestore.instance
+            .collection("Users")
+            .where("uid", isEqualTo: result.user!.uid)
+            .get()
+            .then(
+          (value) {
+            if (role.isNotEmpty) {
+              if (role == 'User') {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/homePage', (Route<dynamic> route) => false);
+
+                prefs.setString('name', fullName);
+                prefs.setString('address', address);
+              } else if (role == 'Admin') {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/adminPanel', (Route<dynamic> route) => false);
+              } else if (role == 'Delivery') {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/deliveryPanel', (Route<dynamic> route) => false);
+              }
             }
-          }
-        },
-      );
+          },
+        );
 
-      prefs.setString('role', role);
+        prefs.setString('role', role);
+      }
     } on FirebaseException catch (e) {
       callBack();
       var error = e.message.toString();

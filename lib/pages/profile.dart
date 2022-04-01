@@ -32,45 +32,54 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      body: Container(
-        height: size.height,
-        child: FutureBuilder(
-          future: getCurrentUID(),
-          builder: (context, AsyncSnapshot snapshot) {
-            return StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection("Users")
-                  .doc(snapshot.data)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.none)
-                  return Center(
-                    child: Text("No Data"),
-                  );
+      appBar: AppBar(
+          backgroundColor: Theme.of(context).primaryColor,
+          title: Text("Profile")),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              // height: size.height,
+              child: FutureBuilder(
+                future: getCurrentUID(),
+                builder: (context, AsyncSnapshot snapshot) {
+                  return StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection("Users")
+                        .doc(snapshot.data)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.none)
+                        return Center(
+                          child: Text("No Data"),
+                        );
 
-                if (snapshot.connectionState == ConnectionState.waiting)
-                  return Center(child: CircularProgressIndicator());
+                      if (snapshot.connectionState == ConnectionState.waiting)
+                        return Center(child: CircularProgressIndicator());
 
-                if (snapshot.connectionState == ConnectionState.active)
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 100.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          ProfileImage(),
-                          UserData(size: size, name: fullName, email: email),
-                          SizedBox(height: size.height * 0.20),
-                          ExistApp(size: size)
-                        ],
-                      ),
-                    ),
+                      if (snapshot.connectionState == ConnectionState.active)
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 100.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              ProfileImage(),
+                              UserData(
+                                  size: size, name: fullName, email: email),
+                              SizedBox(height: size.height * 0.20),
+                              ExistApp(size: size),
+                              SizedBox(height: size.height * 0.20),
+                            ],
+                          ),
+                        );
+                      return Center(child: CircularProgressIndicator());
+                    },
                   );
-                return Center(child: CircularProgressIndicator());
-              },
-            );
-          },
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -210,7 +219,7 @@ class ExistApp extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.exit_to_app),
-          SizedBox(width: size.width * 0.02),
+          //SizedBox(width: size.width * 0.02),
           Text(
             'Log out',
             style: TextStyle(fontSize: 16.0),

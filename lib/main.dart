@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:shop_app/admin/adminHomePage.dart';
+import 'package:shop_app/deliverPanel/delivery.dart';
 import 'package:shop_app/pages/homePage.dart';
 import 'package:shop_app/pages/signIn.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -54,12 +55,12 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 class MyApp extends StatelessWidget {
   const MyApp({
     Key? key,
-    this.title,
-    this.login,
-    this.role,
+    required this.title,
+    required this.login,
+    required this.role,
   }) : super(key: key);
 
-  final String? title;
+  final String title;
   final String? login;
   final String? role;
   @override
@@ -83,12 +84,14 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  Widget? getState(value) {
+  Widget getState(value) {
     if (login != null) {
       if (role == "User") {
         value = HomePage();
       } else if (role == "Admin") {
         value = AdminPanel();
+      } else if (role == "Delivery") {
+        value = DeliveryPanel();
       }
     } else {
       value = SignIn();
