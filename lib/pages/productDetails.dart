@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shop_app/Authentication/auth.dart';
@@ -110,71 +111,145 @@ class _ProductDetailsState extends State<ProductDetails> {
                                                                 await getCurrentUID();
                                                             var date =
                                                                 DateTime.now();
-                                                            FirebaseFirestore
-                                                                .instance
-                                                                // .collection(
-                                                                //     'userInformation')
-                                                                // .doc(uid)
-                                                                .collection(
-                                                                    'Cart')
-                                                                .add(
-                                                              {
-                                                                "img": widget
-                                                                    .heroTag,
-                                                                "name":
-                                                                    widget.name,
-                                                                "price": widget
-                                                                    .price,
-                                                                "Quantity": num
-                                                                    .toString(),
-                                                                "Date": date,
-                                                                "uid": uid,
-                                                              },
-                                                            ).then((value) {
-                                                              Fluttertoast.showToast(
-                                                                  msg:
-                                                                      "Item added to cart",
-                                                                  toastLength: Toast
-                                                                      .LENGTH_SHORT,
-                                                                  gravity:
-                                                                      ToastGravity
-                                                                          .CENTER,
-                                                                  backgroundColor:
-                                                                      Colors.grey[
-                                                                          700],
-                                                                  textColor:
-                                                                      Colors
-                                                                          .white);
 
-                                                              Navigator.pop(
-                                                                  context);
-                                                            }).timeout(
-                                                                    Duration(
-                                                                        seconds:
-                                                                            5),
-                                                                    onTimeout:
-                                                                        () {
-                                                              setState(() {
-                                                                print("Error");
-                                                                Fluttertoast
-                                                                    .showToast(
-                                                                        msg:
-                                                                            "Item will be added to the cart automatically"
-                                                                            " when reconnected to a stable network connection",
-                                                                        toastLength:
-                                                                            Toast
-                                                                                .LENGTH_LONG,
-                                                                        gravity:
-                                                                            ToastGravity
-                                                                                .CENTER,
-                                                                        backgroundColor:
-                                                                            Colors.grey[
-                                                                                700],
-                                                                        textColor:
-                                                                            Colors.white);
+                                                            var fullName =
+                                                                FirebaseAuth
+                                                                    .instance
+                                                                    .currentUser!
+                                                                    .displayName;
+                                                            var cartitem =
+                                                                FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        'Cart')
+                                                                    .where(
+                                                                        'uid',
+                                                                        isEqualTo:
+                                                                            uid)
+                                                                    .where(
+                                                                        'name',
+                                                                        isEqualTo:
+                                                                            widget.name);
+                                                            var available =
+                                                                await cartitem
+                                                                    .get();
+                                                            if (available
+                                                                    .size ==
+                                                                0)
+                                                              FirebaseFirestore
+                                                                  .instance
+                                                                  .collection(
+                                                                      'Cart')
+                                                                  .add(
+                                                                {
+                                                                  "img": widget
+                                                                      .heroTag,
+                                                                  "name": widget
+                                                                      .name,
+                                                                  "price": widget
+                                                                      .price,
+                                                                  "Quantity": num
+                                                                      .toString(),
+                                                                  "Date": date,
+                                                                  "uid": uid,
+                                                                  "userName":
+                                                                      fullName,
+                                                                },
+                                                              ).then((value) {
+                                                                Fluttertoast.showToast(
+                                                                    msg:
+                                                                        "Item added to cart",
+                                                                    toastLength:
+                                                                        Toast
+                                                                            .LENGTH_SHORT,
+                                                                    gravity:
+                                                                        ToastGravity
+                                                                            .CENTER,
+                                                                    backgroundColor:
+                                                                        Colors.grey[
+                                                                            700],
+                                                                    textColor:
+                                                                        Colors
+                                                                            .white);
+
+                                                                Navigator.pop(
+                                                                    context);
+                                                              }).timeout(
+                                                                      Duration(
+                                                                          seconds:
+                                                                              5),
+                                                                      onTimeout:
+                                                                          () {
+                                                                setState(() {
+                                                                  print(
+                                                                      "Error");
+                                                                  Fluttertoast.showToast(
+                                                                      msg: "Item will be added to the cart automatically"
+                                                                          " when reconnected to a stable network connection",
+                                                                      toastLength: Toast.LENGTH_LONG,
+                                                                      gravity: ToastGravity.CENTER,
+                                                                      backgroundColor: Colors.grey[700],
+                                                                      textColor: Colors.white);
+                                                                });
                                                               });
-                                                            });
+                                                            else {
+                                                              FirebaseFirestore
+                                                                  .instance
+                                                                  .collection(
+                                                                      'Cart')
+                                                                  .doc(available
+                                                                      .docs
+                                                                      .first
+                                                                      .id)
+                                                                  .update({
+                                                                "Quantity": (int.parse(available
+                                                                            .docs
+                                                                            .first
+                                                                            .get("Quantity")) +
+                                                                        1)
+                                                                    .toString()
+                                                              }).then((value) {
+                                                                Fluttertoast.showToast(
+                                                                    msg:
+                                                                        "Item added to cart",
+                                                                    toastLength:
+                                                                        Toast
+                                                                            .LENGTH_SHORT,
+                                                                    gravity:
+                                                                        ToastGravity
+                                                                            .CENTER,
+                                                                    backgroundColor:
+                                                                        Colors.grey[
+                                                                            700],
+                                                                    textColor:
+                                                                        Colors
+                                                                            .white);
+
+                                                                Navigator.pop(
+                                                                    context);
+                                                              }).timeout(
+                                                                      Duration(
+                                                                          seconds:
+                                                                              5),
+                                                                      onTimeout:
+                                                                          () {
+                                                                setState(() {
+                                                                  print(
+                                                                      "Error");
+                                                                  Fluttertoast.showToast(
+                                                                      msg: "Item will be added to the cart automatically"
+                                                                          " when reconnected to a stable network connection",
+                                                                      toastLength: Toast.LENGTH_LONG,
+                                                                      gravity: ToastGravity.CENTER,
+                                                                      backgroundColor: Colors.grey[700],
+                                                                      textColor: Colors.white);
+                                                                });
+                                                              });
+                                                              ;
+                                                            }
                                                           } on TimeoutException catch (e) {
+                                                            print(e);
+                                                          } catch (e) {
                                                             print(e);
                                                           }
                                                         },

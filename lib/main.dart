@@ -1,12 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:shop_app/admin/adminHomePage.dart';
+import 'package:shop_app/admin/adminHomePage/adminHomePage.dart';
 import 'package:shop_app/deliverPanel/delivery.dart';
-import 'package:shop_app/pages/homePage.dart';
-import 'package:shop_app/pages/signIn.dart';
+import 'package:shop_app/pages/homepage/homePage.dart';
+import 'package:shop_app/pages/sign%20in/signIn.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/utils/routes.dart';
 
@@ -63,8 +64,16 @@ class MyApp extends StatelessWidget {
   final String title;
   final String? login;
   final String? role;
+
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        systemNavigationBarColor: Colors.black87,
+        systemNavigationBarIconBrightness: Brightness.light,
+        statusBarColor: Colors.black,
+      ),
+    );
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Jam Food',
@@ -77,6 +86,13 @@ class MyApp extends StatelessWidget {
           selectedItemColor: Color(0xFF40BF73),
           selectedIconTheme: IconThemeData(color: Color(0xFF40BF73)),
           selectedLabelStyle: TextStyle(color: Colors.white),
+        ),
+        appBarTheme: AppBarTheme(
+          systemOverlayStyle: SystemUiOverlayStyle.light,
+          elevation: 55,
+          iconTheme: IconThemeData(
+            color: Colors.white,
+          ),
         ),
       ),
       initialRoute: "/",

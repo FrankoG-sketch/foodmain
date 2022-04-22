@@ -176,15 +176,44 @@ class _SignInState extends State<SignIn> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(top: 20.0),
-                            child: Text(
-                              _errorMessage,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15.0,
-                                color: Colors.red,
-                              ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 120.0, vertical: 40.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        isloading = true;
+                                      });
+                                      void callBack() {
+                                        setState(() {
+                                          isloading = false;
+                                        });
+                                      }
+
+                                      Authentication()
+                                          .googleSignIn(context, callBack);
+                                    },
+                                    child: signInMethod(
+                                        'assets/images/google.png')),
+                                GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        isloading = true;
+                                      });
+                                      void callBack() {
+                                        setState(() {
+                                          isloading = false;
+                                        });
+                                      }
+
+                                      Authentication()
+                                          .facebookSignIn(context, callBack);
+                                    },
+                                    child: signInMethod(
+                                        'assets/images/facebook.png')),
+                              ],
                             ),
                           ),
                         ],

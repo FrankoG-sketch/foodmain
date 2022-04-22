@@ -1,31 +1,49 @@
-class UserMod {
+import 'dart:convert';
+
+ClientUserModel clientUserModelFromJson(String str) =>
+    ClientUserModel.fromJson(json.decode(str));
+
+String clientUserModelToJson(ClientUserModel data) =>
+    json.encode(data.toJson());
+
+class ClientUserModel {
+  ClientUserModel(
+      {this.uid,
+      this.email,
+      this.fullName,
+      this.address,
+      this.date,
+      this.imgUrl,
+      this.path,
+      this.role});
   String? uid;
   String? email;
-  String? firstName;
-  String? lastName;
-  var address;
+  String? fullName;
+  String? address;
+  String? imgUrl;
+  String? path;
+  String? role;
+  String? date;
 
-  UserMod({this.uid, this.email, this.firstName, this.lastName, this.address});
+  factory ClientUserModel.fromJson(Map<String, dynamic> map) => ClientUserModel(
+        uid: map['uid'] == null ? null : map['uid'],
+        email: map['email'] == null ? null : map['email'],
+        fullName: map['FullName'] == null ? null : map['FullName'],
+        address: map['address'] == null ? null : map['address'],
+        date: map['date'].toString() == null ? null : map['date'].toString(),
+        imgUrl: map['imgUrl'] == null ? null : map['imgUrl'],
+        path: map['path'] == null ? null : map['path'],
+        role: map['role'] == null ? null : map['role'],
+      );
 
-  // receiving data from server
-  factory UserMod.fromMap(map) {
-    return UserMod(
-      uid: map['uid'],
-      email: map['email'],
-      firstName: map['firstName'],
-      lastName: map['lastName'],
-      address: map['address'],
-    );
-  }
-
-  // sending data to our server
-  Map<String, dynamic> toMap() {
-    return {
-      'uid': uid,
-      'email': email,
-      'firstName': firstName,
-      'lastName': lastName,
-      'address': address,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'uid': uid,
+        'email': email,
+        'fullName': fullName,
+        'address': address,
+        'date': date,
+        'imgUrl': imgUrl,
+        'path': path,
+        'role': role,
+      };
 }

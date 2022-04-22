@@ -7,13 +7,13 @@ SnackBar snackBarWidget(Widget content, Color color) {
 InputDecoration textFieldInputDecoration(
     BuildContext context, String labelText) {
   return InputDecoration(
-    hintText: labelText,
+    labelText: labelText,
     border: new OutlineInputBorder(
       borderSide: new BorderSide(color: Colors.white),
     ),
     fillColor: Colors.white,
     filled: true,
-    hintStyle: TextStyle(
+    labelStyle: TextStyle(
       fontFamily: 'PlayfairDisplay-Regular',
       fontSize: 15.0,
     ),
@@ -63,4 +63,20 @@ class BackgroundImage extends StatelessWidget {
       ),
     );
   }
+}
+
+Image signInMethod(imageLink) {
+  return Image(
+    image: AssetImage(imageLink),
+    height: 30,
+    width: 30,
+  );
+}
+
+SizedBox completedTaskButton(size, task) {
+  return SizedBox(
+    height: size.height * 0.10,
+    width: double.infinity,
+    child: task,
+  );
 }

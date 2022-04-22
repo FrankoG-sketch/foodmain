@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_app/Authentication/auth.dart';
+import 'package:shop_app/deliverPanel/deliveryHomePage.dart/deliveryHomePage.dart';
+import 'package:shop_app/deliverPanel/deliveryPanelProfilePage/deliveryProfilePage.dart';
+import 'package:shop_app/utils/jam_icons_icons.dart';
 
 class DeliveryPanel extends StatefulWidget {
   const DeliveryPanel({Key? key}) : super(key: key);
@@ -9,24 +13,42 @@ class DeliveryPanel extends StatefulWidget {
 }
 
 class _DeliveryPanelState extends State<DeliveryPanel> {
+  int _currentIndex = 0;
+
+  final PageController _pageController = PageController();
+
+  void _onTap(int value) {
+    setState(() {
+      _currentIndex = value;
+    });
+    _pageController.jumpToPage(value);
+  }
+
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
-      drawer: Drawer(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 35.0),
-              child: ListTile(
-                title: Text("Logout "),
-                trailing: Icon(Icons.exit_to_app),
-                onTap: () => Authentication().signOut(context),
-              ),
-            ),
-          ],
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: _onTap,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            label: "",
+            icon: Icon(JamIcons.home),
+          ),
+          BottomNavigationBarItem(
+            label: "",
+            icon: Icon(JamIcons.profile),
+          ),
+        ],
       ),
-      body: Center(child: Text('Delivery')),
+      body: PageView(
+        controller: _pageController,
+        children: [
+          DeliveryHomePage(size: size),
+          DeliveryProfile(size: size),
+        ],
+      ),
     );
   }
 }

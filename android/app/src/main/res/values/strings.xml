@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Jam Food</string>
+    <string name="facebook_app_id">933006324054660</string>
+    <string name="fb_login_protocol_scheme">fb391528479389914</string>
+    <string name="facebook_client_token">d04e1892438a51b9e834ddfde49dc1a8</string>
+</resources>

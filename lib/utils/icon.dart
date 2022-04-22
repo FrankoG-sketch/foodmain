@@ -12,8 +12,11 @@ class IconWidget {
   });
 }
 
-final all =
-    IconWidget(icon: Icons.card_giftcard_outlined, name: "All", tag: "All");
+final all = IconWidget(
+  icon: Icons.card_giftcard_outlined,
+  name: "All",
+  tag: "All",
+);
 
 final starchyFood = IconWidget(
     icon: Icons.card_giftcard_outlined, name: "Starchy\n Food", tag: "Starch");

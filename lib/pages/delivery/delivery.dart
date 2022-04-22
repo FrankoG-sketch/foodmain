@@ -1,9 +1,50 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/Authentication/auth.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
-class Delivery extends StatelessWidget {
+class Delivery extends StatefulWidget {
   const Delivery({Key? key}) : super(key: key);
+
+  @override
+  State<Delivery> createState() => _DeliveryState();
+}
+
+enum PageEnum {
+  foodFilter,
+}
+
+class _DeliveryState extends State<Delivery> {
+  _onSelect(PageEnum value) async {
+    switch (value) {
+      case PageEnum.foodFilter:
+        await Navigator.pushNamed(context, '/deliveryWorkers');
+        break;
+      default:
+        print("Something went wrong");
+        break;
+    }
+  }
+
+  TutorialCoachMark? tutorialCoachMark;
+
+  List<TargetFocus> targets = [];
+
+  GlobalKey keyButton1 = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    initTargets();
+    WidgetsBinding.instance!.addPostFrameCallback(_afterLayout);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    initTargets();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,6 +52,25 @@ class Delivery extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
         title: Text("Delivery"),
+        actions: [
+          PopupMenuButton(
+            key: keyButton1,
+            onSelected: _onSelect,
+            child: Icon(
+              Icons.more_vert_rounded,
+              color: Colors.white,
+            ),
+            itemBuilder: (context) => <PopupMenuEntry<PageEnum>>[
+              PopupMenuItem<PageEnum>(
+                value: PageEnum.foodFilter,
+                child: Text("Delivery Workers"),
+              ),
+            ],
+          ),
+          SizedBox(
+            width: 10.0,
+          ),
+        ],
       ),
       body: Container(
         child: FutureBuilder(
@@ -33,6 +93,80 @@ class Delivery extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+
+  Future<void> initTargets() async {
+    targets.add(
+      TargetFocus(
+        identify: "Target 0",
+        keyTarget: keyButton1,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            child: Container(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 35.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Delivery men",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize: 35.0),
+                        ),
+                      ],
+                    ),
+                    Divider(color: Colors.white),
+                    SizedBox(height: 60),
+                    Text(
+                      "Click here to view and rate the delivery men",
+                      style: TextStyle(color: Colors.white, fontSize: 20.0),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  void showTutorial() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    var intro = preferences.getBool('deliveryMen') ?? false;
+    if (!intro) {
+      tutorialCoachMark = TutorialCoachMark(context,
+          alignSkip: Alignment.bottomLeft,
+          targets: targets,
+          colorShadow: Color.fromARGB(255, 14, 13, 13),
+          textSkip: "SKIP",
+          paddingFocus: 10,
+          opacityShadow: 0.8, onFinish: () {
+        print("finish");
+      }, onClickTarget: (target) {
+        print(target);
+      }, onSkip: () {
+        print("skip");
+      })
+        ..show();
+    }
+    await preferences.setBool('deliveryMen', true);
+  }
+
+  void _afterLayout(_) {
+    Future.delayed(
+      Duration(milliseconds: 100),
+      () {
+        showTutorial();
+      },
     );
   }
 }

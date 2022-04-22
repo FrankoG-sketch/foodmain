@@ -14,12 +14,15 @@ class Cart extends StatefulWidget {
 class _CartState extends State<Cart> {
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
         title: Text("Cart"),
       ),
       body: Container(
+        height: size.height,
         child: Padding(
           padding: const EdgeInsets.only(top: 50.0),
           child: FutureBuilder(
@@ -59,10 +62,9 @@ class CartList extends StatefulWidget {
 }
 
 class _CartListState extends State<CartList> {
-  double value = 0.0;
-  double total = 0.0;
   final formatCurrency = new NumberFormat.simpleCurrency();
-  double mean = 0.0;
+
+  double checkoutTotal = 0.0;
 
   Future<void> _getUid() async {
     var uid = await getCurrentUID();
@@ -110,6 +112,9 @@ class _CartListState extends State<CartList> {
                       ),
                     );
                   else if (snapshot.connectionState == ConnectionState.active) {
+                    double value = 0.0;
+                    double total = 0.0;
+                    double mean = 0.0;
                     return Column(
                       children: [
                         Expanded(
@@ -123,10 +128,6 @@ class _CartListState extends State<CartList> {
                               itemBuilder: (context, index) {
                                 DocumentSnapshot point =
                                     snapshot.data!.docs[index];
-
-                                // if (point.id == _auth.currentUser.uid) {
-                                //   return Container(height: 0);
-                                // }
                                 double myPrices = double.parse(
                                   point['price'].toString().replaceAll(",", ""),
                                 );
@@ -249,6 +250,7 @@ class _CartListState extends State<CartList> {
                                   setState(
                                     () {
                                       mean = total;
+                                      checkoutTotal = mean;
                                     },
                                   );
                                 },
@@ -260,7 +262,7 @@ class _CartListState extends State<CartList> {
                                 ),
                               ),
                               Text(
-                                '${formatCurrency.format(mean)}',
+                                '${formatCurrency.format(checkoutTotal)}',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16.0),
@@ -339,185 +341,200 @@ class _CartListState extends State<CartList> {
                                             showBottomSheet(
                                               context: context,
                                               builder: (builder) {
-                                                return Column(
-                                                  children: [
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          vertical: 35.0),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                horizontal:
-                                                                    35.0),
-                                                        child: Wrap(
-                                                          children: [
-                                                            Text(
-                                                              "A fee of \$2500.00 JMD will be charged for each delivery",
-                                                              style: TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold),
-                                                            )
-                                                          ],
+                                                return SingleChildScrollView(
+                                                  child: Container(
+                                                    height: size.height,
+                                                    child: Column(
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  vertical:
+                                                                      35.0),
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .symmetric(
+                                                                    horizontal:
+                                                                        35.0),
+                                                            child: Wrap(
+                                                              children: [
+                                                                Text(
+                                                                  "A fee of \$2500.00 JMD will be charged for each delivery",
+                                                                  style: TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                )
+                                                              ],
+                                                            ),
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ),
-                                                    Container(
-                                                      height:
-                                                          size.height * 0.50,
-                                                      child: ListView.builder(
-                                                        itemCount: snapshot
-                                                            .data!.docs.length,
-                                                        itemBuilder:
-                                                            (context, index) {
-                                                          DocumentSnapshot
-                                                              point = snapshot
-                                                                  .data!
-                                                                  .docs[index];
+                                                        Container(
+                                                          height: size.height *
+                                                              0.50,
+                                                          child:
+                                                              ListView.builder(
+                                                            itemCount: snapshot
+                                                                .data!
+                                                                .docs
+                                                                .length,
+                                                            itemBuilder:
+                                                                (context,
+                                                                    index) {
+                                                              DocumentSnapshot
+                                                                  point =
+                                                                  snapshot.data!
+                                                                          .docs[
+                                                                      index];
 
-                                                          double myPrices =
-                                                              double.parse(
-                                                            point['price']
-                                                                .toString()
-                                                                .replaceAll(
-                                                                    ",", ""),
-                                                          );
-                                                          int myQuantity =
-                                                              int.parse(
-                                                            point['Quantity']
-                                                                .toString()
-                                                                .replaceAll(
-                                                                    ",", ""),
-                                                          );
+                                                              double myPrices =
+                                                                  double.parse(
+                                                                point['price']
+                                                                    .toString()
+                                                                    .replaceAll(
+                                                                        ",",
+                                                                        ""),
+                                                              );
+                                                              int myQuantity =
+                                                                  int.parse(
+                                                                point['Quantity']
+                                                                    .toString()
+                                                                    .replaceAll(
+                                                                        ",",
+                                                                        ""),
+                                                              );
 
-                                                          print(mean);
-                                                          return Column(
-                                                            children: [
-                                                              SingleChildScrollView(
-                                                                child:
-                                                                    Container(
-                                                                  child:
-                                                                      InkWell(
-                                                                    onTap: () {
-                                                                      showDialog(
-                                                                        context:
-                                                                            context,
-                                                                        builder:
-                                                                            (context) {
-                                                                          return PopUp(
-                                                                            document:
-                                                                                snapshot.data!.docs[index],
+                                                              print(mean);
+                                                              return Column(
+                                                                children: [
+                                                                  SingleChildScrollView(
+                                                                    child:
+                                                                        Container(
+                                                                      child:
+                                                                          InkWell(
+                                                                        onTap:
+                                                                            () {
+                                                                          showDialog(
+                                                                            context:
+                                                                                context,
+                                                                            builder:
+                                                                                (context) {
+                                                                              return PopUp(
+                                                                                document: snapshot.data!.docs[index],
+                                                                              );
+                                                                            },
                                                                           );
                                                                         },
-                                                                      );
-                                                                    },
-                                                                    child:
-                                                                        Column(
-                                                                      children: [
-                                                                        Row(
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.spaceEvenly,
+                                                                        child:
+                                                                            Column(
                                                                           children: [
-                                                                            Image(
-                                                                              image: NetworkImage('${point['img']}'),
-                                                                              loadingBuilder: (context, child, progress) {
-                                                                                return progress == null ? child : CircularProgressIndicator();
-                                                                              },
-                                                                              errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                                                                return Padding(
-                                                                                  padding: const EdgeInsets.all(18.0),
-                                                                                  child: Icon(
-                                                                                    Icons.broken_image_outlined,
-                                                                                    size: 50,
-                                                                                  ),
-                                                                                );
-                                                                              },
-                                                                              fit: BoxFit.cover,
-                                                                              height: 50.0,
-                                                                              width: 50.0,
-                                                                            ),
-                                                                            Text(
-                                                                              '${point['name']}',
-                                                                              style: TextStyle(
-                                                                                fontFamily: 'PlayfairDisplay',
-                                                                                fontSize: 16.0,
-                                                                              ),
-                                                                            ),
-                                                                            Text(
-                                                                              '${formatCurrency.format(myPrices)}',
-                                                                              style: TextStyle(
-                                                                                fontFamily: 'PlayfairDisplay - Regular',
-                                                                                fontSize: 16.0,
-                                                                              ),
-                                                                            ),
                                                                             Row(
+                                                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                                                               children: [
-                                                                                Text("x"),
+                                                                                Image(
+                                                                                  image: NetworkImage('${point['img']}'),
+                                                                                  loadingBuilder: (context, child, progress) {
+                                                                                    return progress == null ? child : CircularProgressIndicator();
+                                                                                  },
+                                                                                  errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                                                                                    return Padding(
+                                                                                      padding: const EdgeInsets.all(18.0),
+                                                                                      child: Icon(
+                                                                                        Icons.broken_image_outlined,
+                                                                                        size: 50,
+                                                                                      ),
+                                                                                    );
+                                                                                  },
+                                                                                  fit: BoxFit.cover,
+                                                                                  height: 50.0,
+                                                                                  width: 50.0,
+                                                                                ),
                                                                                 Text(
-                                                                                  myQuantity.toString(),
+                                                                                  '${point['name']}',
                                                                                   style: TextStyle(
+                                                                                    fontFamily: 'PlayfairDisplay',
                                                                                     fontSize: 16.0,
-                                                                                    fontFamily: 'PlayfairDisplay - Regular',
                                                                                   ),
                                                                                 ),
+                                                                                Text(
+                                                                                  '${formatCurrency.format(myPrices)}',
+                                                                                  style: TextStyle(
+                                                                                    fontFamily: 'PlayfairDisplay - Regular',
+                                                                                    fontSize: 16.0,
+                                                                                  ),
+                                                                                ),
+                                                                                Row(
+                                                                                  children: [
+                                                                                    Text("x"),
+                                                                                    Text(
+                                                                                      myQuantity.toString(),
+                                                                                      style: TextStyle(
+                                                                                        fontSize: 16.0,
+                                                                                        fontFamily: 'PlayfairDisplay - Regular',
+                                                                                      ),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
                                                                               ],
-                                                                            ),
+                                                                            )
                                                                           ],
-                                                                        )
-                                                                      ],
+                                                                        ),
+                                                                      ),
                                                                     ),
                                                                   ),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          );
-                                                        },
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width:
-                                                          MediaQuery.of(context)
+                                                                ],
+                                                              );
+                                                            },
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
                                                                   .size
                                                                   .width -
                                                               50,
-                                                      height:
-                                                          MediaQuery.of(context)
+                                                          height: MediaQuery.of(
+                                                                      context)
                                                                   .size
                                                                   .height /
                                                               10,
-                                                      child: MaterialButton(
-                                                        color: Theme.of(context)
-                                                            .primaryColor,
-                                                        onPressed: () {
-                                                          final List<
-                                                                  DocumentSnapshot>
-                                                              documents =
-                                                              snapshot
-                                                                  .data!.docs;
+                                                          child: MaterialButton(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .primaryColor,
+                                                            onPressed: () {
+                                                              final List<
+                                                                      DocumentSnapshot>
+                                                                  documents =
+                                                                  snapshot.data!
+                                                                      .docs;
 
-                                                          Navigator.pushNamed(
-                                                            context,
-                                                            '/delieveryCheckOut',
-                                                            arguments:
-                                                                DeliveryCheckOut(
-                                                                    documents:
-                                                                        documents
-                                                                            .map((doc) {
-                                                              return doc.data();
-                                                            }).toList()),
-                                                          );
-                                                        },
-                                                        child: Text(
-                                                          "Deliver to me",
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white),
+                                                              Navigator
+                                                                  .pushNamed(
+                                                                context,
+                                                                '/delieveryCheckOut',
+                                                                arguments:
+                                                                    DeliveryCheckOut(
+                                                                        documents:
+                                                                            documents.map((doc) {
+                                                                  return doc
+                                                                      .data();
+                                                                }).toList()),
+                                                              );
+                                                            },
+                                                            child: Text(
+                                                              "Deliver to me",
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .white),
+                                                            ),
+                                                          ),
                                                         ),
-                                                      ),
+                                                      ],
                                                     ),
-                                                  ],
+                                                  ),
                                                 );
                                               },
                                             );
@@ -812,12 +829,9 @@ class _CheckOutDialogState extends State<CheckOutDialog>
                                           onPressed: confirm,
                                           color: Theme.of(context).primaryColor,
                                           textColor: Colors.white,
-                                          child: new Text(
-                                            "Pay Now",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .button,
-                                          ),
+                                          child: new Text("Pay Now",
+                                              style: TextStyle(
+                                                  color: Colors.white)),
                                           splashColor: Colors.white,
                                         ),
                                       ),

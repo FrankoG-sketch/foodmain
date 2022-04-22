@@ -1,19 +1,98 @@
 import 'package:flutter/material.dart';
-import 'package:shop_app/admin/adminHomePage.dart';
+import 'package:shop_app/admin/AdminDeliveryList/adminDelivery.dart';
+import 'package:shop_app/admin/adminClientView/adminViewClient.dart';
+import 'package:shop_app/admin/adminDeliveryMen/adminDeliveryMen.dart';
+import 'package:shop_app/admin/adminFeedBack/adminFeedBack.dart';
+import 'package:shop_app/admin/adminFoodFilter/adminFoodFilter.dart';
+import 'package:shop_app/admin/adminHomePage/adminHomePage.dart';
+import 'package:shop_app/admin/adminInventoryPage/inventoryPage.dart';
 import 'package:shop_app/deliverPanel/delivery.dart';
+import 'package:shop_app/deliverPanel/deliveryPanelProfilePage/deliveryProfilePage.dart';
 import 'package:shop_app/pages/Popular_items.dart';
+import 'package:shop_app/pages/delivery%20workers/deliveryWorkers.dart';
 import 'package:shop_app/pages/deliveryCheckOut.dart';
-import 'package:shop_app/pages/homePage.dart';
+import 'package:shop_app/pages/feedBack/feedBack.dart';
+import 'package:shop_app/pages/food%20filter/foodFilter.dart';
+import 'package:shop_app/pages/homepage/homePage.dart';
+import 'package:shop_app/pages/iconWidgetPages/All.dart';
+import 'package:shop_app/pages/iconWidgetPages/Diary.dart';
+import 'package:shop_app/pages/iconWidgetPages/FruitsVeg.dart';
+import 'package:shop_app/pages/iconWidgetPages/protein.dart';
+import 'package:shop_app/pages/iconWidgetPages/starch.dart';
 import 'package:shop_app/pages/passwordReset.dart';
 import 'package:shop_app/pages/productDetails.dart';
 import 'package:shop_app/pages/productPage.dart';
-import 'package:shop_app/pages/signUp.dart';
-import 'package:shop_app/pages/signIn.dart';
+import 'package:shop_app/pages/profile/profile.dart';
+import 'package:shop_app/pages/registerAddress/registerAddress.dart';
+import 'package:shop_app/pages/sign%20up/signUp.dart';
+import 'package:shop_app/pages/sign%20in/signIn.dart';
 import 'package:shop_app/pages/special_items.dart';
+import 'package:shop_app/utils/ShippingPolicy.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case '/viewClients':
+        return MaterialPageRoute(builder: ((context) => ViewClients()));
+      case '/adminFeedBack':
+        return MaterialPageRoute(builder: ((context) => AdminFeedBack()));
+      case '/feedBack':
+        return MaterialPageRoute(builder: ((context) => FeedBackHelp()));
+      case '/shippingPolicy':
+        return MaterialPageRoute(builder: ((context) => ShippingPolicy()));
+
+      case '/adminFoodFilter':
+        return MaterialPageRoute(builder: (((context) => AdminFoodFiler())));
+      case '/diary':
+        return MaterialPageRoute(builder: ((context) => Diary()));
+
+      case '/starch':
+        return MaterialPageRoute(builder: ((context) => Starch()));
+
+      case '/protein':
+        return MaterialPageRoute(builder: ((context) => Protein()));
+
+      case '/fruits&Veg':
+        return MaterialPageRoute(builder: ((context) => FruitsAndVeg()));
+
+      case '/allFoods':
+        return MaterialPageRoute(builder: ((context) => AllFoods()));
+
+      case '/deliveryOrders':
+        return MaterialPageRoute(builder: (context) => AdminDeliveryList());
+
+      case '/profile':
+        return MaterialPageRoute(builder: (((context) => Profile())));
+
+      case '/deliveryProfilePage':
+        DeliveryProfile? args = settings.arguments as DeliveryProfile?;
+        return MaterialPageRoute(
+          builder: ((context) => DeliveryProfile(size: args!.size)),
+        );
+
+      case '/adminInvertory':
+        return MaterialPageRoute(builder: (((context) => Inventory())));
+
+      case '/adminPanelDeliveryView':
+        return MaterialPageRoute(builder: ((context) => AdminDeliveryMen()));
+
+      case '/deliveryWorkers':
+        return MaterialPageRoute(builder: ((context) => DeliveryWorkers()));
+
+      case '/foodFilterData':
+        FilterFoodData? args = settings.arguments as FilterFoodData?;
+        return MaterialPageRoute(
+          builder: (((context) => FilterFoodData(
+                getFilters: args!.getFilters,
+              ))),
+        );
+
+      case '/foodFilter':
+        return MaterialPageRoute(builder: (((context) => FoodFilter())));
+
+      case '/registerAddress':
+        return MaterialPageRoute(builder: (((context) => RegisterAddress())));
+
       case '/deliveryPanel':
         return MaterialPageRoute(builder: ((context) => DeliveryPanel()));
 
