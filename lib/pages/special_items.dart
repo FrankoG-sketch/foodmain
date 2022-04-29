@@ -78,6 +78,7 @@ class Specialitems extends StatelessWidget {
                             heroTag: specialModel.imgPath,
                             name: specialModel.name,
                             price: specialModel.price,
+                            rating: specialModel.rating,
                           ),
                         ),
                         child: Padding(

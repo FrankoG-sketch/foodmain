@@ -10,21 +10,25 @@ class AllFoodsModel {
     this.img,
     this.name,
     this.price,
+    this.rating,
   });
 
   String? img;
   String? name;
   String? price;
+  String? rating;
 
   factory AllFoodsModel.fromJson(Map<String, dynamic> json) => AllFoodsModel(
         img: json["img"],
         name: json["name"],
         price: json["price"],
+        rating: json["rating"].toString(),
       );
 
   Map<String, dynamic> toJson() => {
         "img": img,
         "name": name,
         "price": price,
+        "rating": rating,
       };
 }

@@ -83,6 +83,7 @@ class ProductBody extends StatelessWidget {
                           heroTag: products.imgPath,
                           name: products.name,
                           price: products.price,
+                          rating: products.rating,
                         ),
                       ),
                       child: Padding(

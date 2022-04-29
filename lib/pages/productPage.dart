@@ -84,6 +84,7 @@ class _ProductPageState extends State<ProductPage> {
                             heroTag: products.imgPath,
                             name: products.name,
                             price: products.price,
+                            rating: products.rating,
                           ),
                         ),
                         child: Container(

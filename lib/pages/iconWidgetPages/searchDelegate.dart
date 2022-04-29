@@ -51,6 +51,7 @@ class MySearchDelegate extends SearchDelegate {
                             heroTag: a['img'],
                             name: a['name'],
                             price: a['price'],
+                            rating: a['rating'],
                           ),
                         ),
                         contentPadding: EdgeInsets.symmetric(horizontal: 50),

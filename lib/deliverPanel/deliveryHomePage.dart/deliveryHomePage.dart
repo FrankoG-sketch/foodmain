@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shop_app/deliverPanel/deliveryPanelProfilePage/deliveryProfilePage.dart';
 import '../../Authentication/auth.dart';
 
@@ -132,16 +133,20 @@ class _DeliverySideListState extends State<DeliverySideList> {
                   .where("Delivery Progress", isEqualTo: "Shipped")
                   .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (!snapshot.hasData)
+                  return Center(child: CircularProgressIndicator());
+                else if (snapshot.data!.docs.isEmpty)
+                  return Center(
+                    child: Text("No Jobs Avaliable"),
+                  );
+
                 return ListView.builder(
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
-                      if (!snapshot.hasData)
-                        return Center(child: CircularProgressIndicator());
-                      else if (snapshot.data!.docs.isEmpty)
-                        return Center(
-                          child: Text("No Jobs Avaliable"),
-                        );
-
+                      if (this.widget.documents[index]!['Delivery Progress'] !=
+                          "Shipped") {
+                        return Container();
+                      }
                       return SizedBox(
                         height: size.height * 0.20,
                         child: InkWell(
@@ -171,6 +176,46 @@ class _DeliverySideListState extends State<DeliverySideList> {
                                                 .update({
                                               "Delivery Progress": "Arrived"
                                             });
+
+                                            DateTime date = DateTime.now();
+
+                                            String? name = FirebaseAuth.instance
+                                                .currentUser!.displayName;
+
+                                            var deliveriedJobObject = {
+                                              "uid": this
+                                                  .widget
+                                                  .documents[index]!['uid'],
+                                              "address": this
+                                                  .widget
+                                                  .documents[index]!['address'],
+                                              "Client Name":
+                                                  this.widget.documents[index]![
+                                                      'Client name'],
+                                              "date": date,
+                                              "directions":
+                                                  this.widget.documents[index]![
+                                                      'directions'],
+                                              "Delivery Progress": "Arrived",
+                                              "Delivery Personnel": name,
+                                              "products infor":
+                                                  this.widget.documents[index]![
+                                                      'products infor'],
+                                            };
+
+                                            FirebaseFirestore.instance
+                                                .collection("Deliveried Jobs")
+                                                .doc(this
+                                                    .widget
+                                                    .documents[index]!['uid'])
+                                                .set(deliveriedJobObject)
+                                                .then((value) => {
+                                                      Fluttertoast.showToast(
+                                                          msg: "Job Completed",
+                                                          toastLength:
+                                                              Toast.LENGTH_LONG)
+                                                    });
+
                                             Navigator.pop(context);
                                           },
                                           child: Text('Yes'))
@@ -222,8 +267,11 @@ class _DeliverySideListState extends State<DeliverySideList> {
                                                 int.parse(element['Quantity']);
                                           });
 
-                                          return Text(
-                                              'Client Name: ${i['user name']} \n Total:  $total');
+                                          return Row(
+                                            children: [
+                                              Text('Total:  \$$total'),
+                                            ],
+                                          );
                                         })
 
                                       // Text(

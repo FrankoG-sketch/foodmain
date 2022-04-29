@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+IconData? selectedIcon;
+
 SnackBar snackBarWidget(Widget content, Color color) {
   return SnackBar(content: content, backgroundColor: color);
 }

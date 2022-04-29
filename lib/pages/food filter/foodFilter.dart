@@ -11,116 +11,82 @@ class FoodFilter extends StatefulWidget {
 }
 
 class _FoodFilterState extends State<FoodFilter> {
-  bool filterDetected = false;
-  bool isloading = true;
-
-  var uidKey;
-  @override
-  void initState() {
-    super.initState();
-    getFilter();
-  }
-
   @override
   Widget build(BuildContext context) {
     var uid = FirebaseAuth.instance.currentUser!.uid;
     return Container(
-        child: isloading
-            ? Center(child: CircularProgressIndicator())
-            : FutureBuilder(
-                future: getCurrentUID(),
-                //let me show u sumn...
-                builder: (context, AsyncSnapshot snapshot) {
-                  return StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection("Food Filter")
-                          .where("uid", isEqualTo: uid)
-                          .snapshots(),
-                      builder:
-                          (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                        return Scaffold(
-                          floatingActionButton: !snapshot.hasData
-                              ? SizedBox.shrink()
-                              : snapshot.data!.docs.isEmpty
-                                  ? FloatingActionButton(
-                                      backgroundColor:
-                                          Theme.of(context).primaryColor,
-                                      onPressed: (() async {
-                                        await Navigator.pushNamed(
-                                            context, '/foodFilterData',
-                                            arguments: FilterFoodData(
-                                                getFilters: getFilter));
-                                        await getFilter();
-                                      }),
-                                      child: Icon(
-                                        Icons.add,
-                                        color: Colors.white,
-                                      ),
-                                    )
-                                  : null,
-                          appBar: AppBar(
-                            backgroundColor: Theme.of(context).primaryColor,
-                            title: Text("Food Filter"),
-                          ),
-                          body: Builder(
-                            //let me show u sumn...
-                            builder: (context) {
-                              if (!snapshot.hasData) {
-                                return Center(
-                                    child: CircularProgressIndicator());
-                              }
-
-                              return FilterList(
-                                  documents: snapshot.data!.docs,
-                                  getFilters: () => getFilter());
-                            },
-                          ),
-                        );
-                      });
-                }));
+        child: FutureBuilder(
+            future: getCurrentUID(),
+            builder: (context, AsyncSnapshot snapshot) {
+              return StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection("Food Filter")
+                      .where("uid", isEqualTo: uid)
+                      .snapshots(),
+                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    // if (!snapshot.hasData)
+                    //   return Center(child: CircularProgressIndicator());
+                    // else if (snapshot.data!.docs.isEmpty)
+                    //   return Center(
+                    //     child: Text("No Food Filter Avaliable"),
+                    //   );
+                    return Scaffold(
+                      floatingActionButton: !snapshot.hasData
+                          ? SizedBox.shrink()
+                          : snapshot.data!.docs.isEmpty
+                              ? FloatingActionButton(
+                                  backgroundColor:
+                                      Theme.of(context).primaryColor,
+                                  onPressed: (() async {
+                                    await Navigator.pushNamed(
+                                        context, '/foodFilterData');
+                                  }),
+                                  child: Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : null,
+                      appBar: AppBar(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        title: Text("Food Filter"),
+                      ),
+                      body: Builder(
+                        //let me show u sumn...
+                        builder: (context) {
+                          // if (!snapshot.hasData)
+                          //   return Center(
+                          //       child: CircularProgressIndicator());
+                          // else if (snapshot.data!.docs.isEmpty)
+                          //   return Center(
+                          //     child: Text("No Jobs Avaliable"),
+                          //   );
+                          return FilterList(documents: snapshot.data?.docs);
+                        },
+                      ),
+                    );
+                  });
+            }));
   }
 
-  Future getFilter() async {
-    var uid = await getCurrentUID();
+  // Future getFilter() async {
 
-    print("function called");
+  //   final DocumentSnapshot snapshot = await FirebaseFirestore.instance
+  //       .collection("Food Filter")
+  //       .doc(uid)
+  //       .get();
 
-    setState(() {
-      uidKey = uid;
-    });
-
-    final DocumentSnapshot snapshot = await FirebaseFirestore.instance
-        .collection("Food Filter")
-        .doc(uid)
-        .get();
-
-    var collection = FirebaseFirestore.instance.collection('Food Filter');
-    var docSnapshot = await collection.doc(uid).get();
-
-    if (docSnapshot.exists) {
-      setState(() {
-        isloading = false;
-        filterDetected = true;
-      });
-    }
-
-    if (docSnapshot.exists == false) {
-      setState(() {
-        isloading = false;
-      });
-    }
-  }
+  //   var collection = FirebaseFirestore.instance.collection('Food Filter');
+  //   var docSnapshot = await collection.doc(uid).get();
+  // }
 }
 
 class FilterList extends StatefulWidget {
   final List<DocumentSnapshot>? documents;
 
-  final VoidCallback getFilters;
-
   const FilterList({
     Key? key,
     this.documents,
-    required this.getFilters,
   }) : super(key: key);
 
   @override
@@ -139,11 +105,8 @@ class _FilterListState extends State<FilterList> {
   @override
   void initState() {
     super.initState();
-    this.widget.getFilters();
     _getUid();
   }
-
-  bool filterDetected = false;
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +115,7 @@ class _FilterListState extends State<FilterList> {
       body: FutureBuilder(
         future: getCurrentUID(),
         builder: (context, AsyncSnapshot snapshot) {
-          return StreamBuilder<QuerySnapshot>(
+          return StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection("Food Filter")
                 .where('uid', isEqualTo: uidKey)
@@ -160,82 +123,95 @@ class _FilterListState extends State<FilterList> {
                 //maybe u dont need to know, but just telling u incase
                 .snapshots(),
             builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (snapshot.data == null)
-                return Center(child: CircularProgressIndicator());
+              // if (!snapshot.hasData)
+              //   return Center(child: CircularProgressIndicator());
+              // else if (snapshot.data!.docs.isEmpty)
+              //   return Center(
+              //     child: Text("No Food Filter Avaliable"),
+              //   );
 
-              return ListView.builder(
-                itemCount: snapshot.data!.docs.length,
-                itemBuilder: (context, index) {
-                  return InkWell(
-                    onTap: (() => showDialog(
-                          context: context,
-                          builder: (builder) {
-                            return FilterFoodData(
+              if (snapshot.connectionState == ConnectionState.waiting)
+                return Center(child: CircularProgressIndicator());
+              else if (snapshot.connectionState == ConnectionState.active)
+                return ListView.builder(
+                  itemCount: snapshot.data?.docs.length,
+                  itemBuilder: (context, index) {
+                    return InkWell(
+                      onTap: (() => showDialog(
+                            context: context,
+                            builder: (builder) {
+                              return FilterFoodData(
                                 document: this.widget.documents![index],
-                                getFilters: () => this.widget.getFilters);
-                          },
-                        )),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 35.0, vertical: 35.0),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                            "Diet Type: ${this.widget.documents![index]['diet type']}")
-                                      ],
-                                    ),
-                                    SizedBox(height: size.height * 0.04),
-                                    Row(
-                                      children: [
-                                        ConstrainedBox(
-                                          constraints: BoxConstraints(
-                                            maxWidth: size.width * 0.80,
-                                          ),
-                                          child: Text(
-                                              "Allergy: ${this.widget.documents![index]['allergy']}"),
-                                        )
-                                      ],
-                                    ),
-                                    SizedBox(height: size.height * 0.04),
-                                    Row(
-                                      children: [
-                                        ConstrainedBox(
-                                          constraints: BoxConstraints(
-                                              maxWidth: size.width * 0.80),
-                                          child: Text(
-                                              "Exercise Plan: ${this.widget.documents![index]['exercise plan']}"),
-                                        )
-                                      ],
-                                    ),
-                                    SizedBox(height: size.height * 0.04),
-                                    Row(
-                                      children: [
-                                        ConstrainedBox(
-                                          constraints: BoxConstraints(
-                                            maxWidth: size.width * 0.80,
-                                          ),
-                                          child: Text(
-                                              "Special Diet: ${this.widget.documents![index]['special diet']}"),
-                                        )
-                                      ],
-                                    ),
-                                  ],
+                              );
+                            },
+                          )),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 35.0, vertical: 35.0),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          if (this.widget.documents![index]
+                                                  ['diet type'] ==
+                                              null) ...[Text('')] else
+                                            Text(
+                                                "Diet Type: ${this.widget.documents![index]['diet type']}")
+                                        ],
+                                      ),
+                                      SizedBox(height: size.height * 0.04),
+                                      Row(
+                                        children: [
+                                          ConstrainedBox(
+                                            constraints: BoxConstraints(
+                                              maxWidth: size.width * 0.80,
+                                            ),
+                                            child: Text(
+                                                "Allergy: ${this.widget.documents![index]['allergy']}"),
+                                          )
+                                        ],
+                                      ),
+                                      SizedBox(height: size.height * 0.04),
+                                      Row(
+                                        children: [
+                                          ConstrainedBox(
+                                            constraints: BoxConstraints(
+                                                maxWidth: size.width * 0.80),
+                                            child: Text(
+                                                "Exercise Plan: ${this.widget.documents![index]['exercise plan']}"),
+                                          )
+                                        ],
+                                      ),
+                                      SizedBox(height: size.height * 0.04),
+                                      Row(
+                                        children: [
+                                          ConstrainedBox(
+                                            constraints: BoxConstraints(
+                                              maxWidth: size.width * 0.80,
+                                            ),
+                                            child: Text(
+                                                "Special Diet: ${this.widget.documents![index]['special diet']}"),
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                        ],
+                      ),
+                    );
+                  },
+                );
+              return Center(
+                child: Text("Data not available \n Error Occured"),
               );
             },
           );
@@ -247,8 +223,7 @@ class _FilterListState extends State<FilterList> {
 
 class FilterFoodData extends StatefulWidget {
   final DocumentSnapshot? document;
-  final VoidCallback getFilters;
-  FilterFoodData({this.document, required this.getFilters});
+  FilterFoodData({this.document});
 
   @override
   State<FilterFoodData> createState() => _FilterFoodDataState();
@@ -273,7 +248,6 @@ class _FilterFoodDataState extends State<FilterFoodData> {
   @override
   void initState() {
     super.initState();
-    this.widget.getFilters();
     pageController = PageController(keepPage: true);
     if (widget.document != null) {
       dietType.text = this.widget.document!['diet type'];
@@ -290,7 +264,6 @@ class _FilterFoodDataState extends State<FilterFoodData> {
   @override
   void dispose() {
     super.dispose();
-    this.widget.getFilters();
     pageController?.dispose();
     print("testing");
   }
@@ -302,7 +275,6 @@ class _FilterFoodDataState extends State<FilterFoodData> {
         "Cancel",
       ),
       onPressed: () {
-        this.widget.getFilters();
         Navigator.pop(context);
       },
     );
@@ -320,7 +292,7 @@ class _FilterFoodDataState extends State<FilterFoodData> {
             Fluttertoast.showToast(
               msg: 'Food Filter Deleted',
               toastLength: Toast.LENGTH_SHORT,
-            ).then((value) => this.widget.getFilters());
+            );
             Navigator.pop(context);
             Navigator.pop(context);
           },
@@ -437,7 +409,7 @@ class _FilterFoodDataState extends State<FilterFoodData> {
                                                   Fluttertoast.showToast(
                                                       msg:
                                                           'Your Food Filter has been saved');
-                                                  this.widget.getFilters();
+
                                                   Navigator.pop(context);
                                                 }).timeout(Duration(seconds: 5),
                                                       onTimeout: () {
@@ -456,7 +428,7 @@ class _FilterFoodDataState extends State<FilterFoodData> {
                                                   transaction.update(
                                                       snapshot.reference,
                                                       dietObject);
-                                                  this.widget.getFilters();
+
                                                   Fluttertoast.showToast(
                                                       msg:
                                                           'Your Food Filter has been updated');
@@ -529,7 +501,6 @@ class _FilterFoodDataState extends State<FilterFoodData> {
                                                           msg:
                                                               'Your Food Filter has been saved');
                                                       Navigator.pop(context);
-                                                      this.widget.getFilters();
                                                     }).timeout(
                                                           Duration(seconds: 5),
                                                           onTimeout: () {
@@ -546,7 +517,7 @@ class _FilterFoodDataState extends State<FilterFoodData> {
                                                           await transaction.get(
                                                               widget.document!
                                                                   .reference);
-                                                      this.widget.getFilters();
+
                                                       transaction.update(
                                                           snapshot.reference,
                                                           dietObject);
@@ -590,7 +561,6 @@ class _FilterFoodDataState extends State<FilterFoodData> {
                                     width: size.width * 0.30,
                                     child: MaterialButton(
                                       onPressed: () async {
-                                        this.widget.getFilters();
                                         deleteFilter();
                                       },
                                       color: Theme.of(context).primaryColor,

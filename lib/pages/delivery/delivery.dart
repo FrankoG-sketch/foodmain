@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/Authentication/auth.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
+import 'package:intl/intl.dart';
 
 class Delivery extends StatefulWidget {
   const Delivery({Key? key}) : super(key: key);
@@ -224,26 +225,12 @@ class _DeliveryListState extends State<DeliveryList> {
                         itemBuilder: (context, index) {
                           DocumentSnapshot point = snapshot.data!.docs[index];
 
-                          // var uidFromCart = point['uid'];
-
-                          // if (uidFromCart == uid) {
-                          //   return Container(height: 0);
-                          // }
-
-                          // double myPrices = double.parse(
-                          //   point['price'].toString().replaceAll(",", ""),
-                          // );
-                          // int myQuantity = int.parse(
-                          //   point['Quantity'].toString().replaceAll(",", ""),
-                          // );
-
-                          // value = myPrices * myQuantity;
-
-                          // total += value;
-
-                          // mean = total;
-                          // print(mean);
-
+                          double total = 0;
+                          for (var i in snapshot.data!.docs[index]
+                              ['products infor']) {
+                            total += double.parse(i['price']) *
+                                double.parse(i['Quantity']);
+                          }
                           return Column(
                             children: [
                               SingleChildScrollView(
@@ -286,12 +273,97 @@ class _DeliveryListState extends State<DeliveryList> {
                                               MainAxisAlignment.start,
                                           children: [
                                             Text(
-                                              'Date made: ${point['date'].toDate()}',
+                                              'Date made: ${DateFormat.yMMMd().format(point['date'].toDate())}',
                                               style: TextStyle(
                                                 fontFamily: 'PlayfairDisplay',
                                                 fontSize: 16.0,
                                               ),
                                             ),
+                                          ],
+                                        ),
+                                        SizedBox(height: size.height * 0.01),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            if (point['selected personal'] ==
+                                                null) ...[
+                                              Text(
+                                                "Delivery Personnel: No Driver selected as yet",
+                                                style: TextStyle(
+                                                  fontFamily: 'PlayfairDisplay',
+                                                  fontSize: 16.0,
+                                                ),
+                                              ),
+                                            ] else
+                                              Text(
+                                                'Delivery Personnel: ${point['selected personal']}',
+                                                style: TextStyle(
+                                                  fontFamily: 'PlayfairDisplay',
+                                                  fontSize: 16.0,
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                        SizedBox(height: size.height * 0.01),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "Total: \$$total",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: size.height * 0.01),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            for (var i
+                                                in point['products infor'])
+                                              Builder(builder: (context) {
+                                                double total = 0;
+                                                List items =
+                                                    point['products infor']
+                                                        .map((e) {
+                                                  if (e['user name'] ==
+                                                      i['user name']) return e;
+                                                }).toList();
+                                                items.forEach((element) {
+                                                  total += double.parse(
+                                                          element['price']) *
+                                                      int.parse(
+                                                          element['Quantity']);
+                                                });
+
+                                                return Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      "Products: ",
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        Text(i['name']),
+                                                        Text(
+                                                            ' x ${i['Quantity']}'),
+                                                        Text(
+                                                            ' = \$${i['price']}')
+                                                      ],
+                                                    ),
+                                                    // Text(
+                                                    //     'Product Total:  \$$total'),
+                                                  ],
+                                                );
+                                              })
+
+                                            // Text(
+                                            //     'Products: ${this.widget.documents[index]!['']}'),
                                           ],
                                         ),
                                       ],

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:shop_app/Model/deliveryModel.dart';
 import 'package:shop_app/admin/Admin%20Authentication/adminAuthentication.dart';
+import 'package:shop_app/pages/delivery%20workers/deliveryWorkerRatings.dart';
 
 IconData? _selectedIcon;
 
@@ -60,88 +61,104 @@ class DeliveryWorkers extends StatelessWidget {
                               return Container();
                             }
 
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: SizedBox(
-                                width: size.width * 0.60,
-                                child: Card(
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        height: size.height * 0.25,
-                                        width: double.infinity,
-                                        child: Image(
-                                          image: NetworkImage(
-                                            deliveryMenModel.imgUrl!,
-                                          ),
-                                          loadingBuilder:
-                                              (context, child, progress) {
-                                            return progress == null
-                                                ? child
-                                                : CircularProgressIndicator();
-                                          },
-                                          errorBuilder: (BuildContext context,
-                                              Object exception,
-                                              StackTrace? stackTrace) {
-                                            return Padding(
-                                              padding:
-                                                  const EdgeInsets.all(18.0),
-                                              child: Icon(
-                                                  Icons.broken_image_outlined),
-                                            );
-                                          },
-                                          fit: BoxFit.cover,
-                                          height: 75.0,
-                                          width: 75.0,
-                                        ),
-                                      ),
-                                      SizedBox(width: size.width * 0.05),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 12.0, vertical: 12.0),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                                'Name: ${deliveryMenModel.fullName!}'),
-                                            SizedBox(
-                                                height: size.height * 0.01),
-                                            Row(
-                                              children: [
-                                                Text("Ratings: "),
-                                                RatingBarIndicator(
-                                                  rating: double.parse(
-                                                      deliveryMenModel
-                                                          .ratings!),
-                                                  itemBuilder:
-                                                      (context, index) => Icon(
-                                                    _selectedIcon ?? Icons.star,
-                                                    color: Colors.amber,
-                                                  ),
-                                                  itemCount: 5,
-                                                  itemSize: 13.0,
-                                                  unratedColor: Colors.amber
-                                                      .withAlpha(85),
-                                                  direction: Axis.horizontal,
-                                                ),
-                                              ],
+                            return InkWell(
+                              onTap: () => Navigator.pushNamed(
+                                context,
+                                '/deliveryWorkerRatings',
+                                arguments: DeliveryWorkerRatings(
+                                  address: deliveryMenModel.address,
+                                  email: deliveryMenModel.email,
+                                  imgUrl: deliveryMenModel.imgUrl,
+                                  name: deliveryMenModel.fullName,
+                                ),
+                              ),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: SizedBox(
+                                  width: size.width * 0.60,
+                                  child: Card(
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          height: size.height * 0.25,
+                                          width: double.infinity,
+                                          child: Image(
+                                            image: NetworkImage(
+                                              deliveryMenModel.imgUrl!,
                                             ),
-                                            SizedBox(
-                                                height: size.height * 0.01),
-                                            Text(
-                                                "Email: ${deliveryMenModel.email}"),
-                                            SizedBox(
-                                                height: size.height * 0.01),
-                                            Text(
-                                                "Address: ${deliveryMenModel.address}"),
-                                          ],
+                                            loadingBuilder:
+                                                (context, child, progress) {
+                                              return progress == null
+                                                  ? child
+                                                  : Center(
+                                                      child:
+                                                          CircularProgressIndicator());
+                                            },
+                                            errorBuilder: (BuildContext context,
+                                                Object exception,
+                                                StackTrace? stackTrace) {
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.all(18.0),
+                                                child: Icon(Icons
+                                                    .broken_image_outlined),
+                                              );
+                                            },
+                                            fit: BoxFit.cover,
+                                            height: 75.0,
+                                            width: 75.0,
+                                          ),
                                         ),
-                                      )
-                                    ],
+                                        SizedBox(width: size.width * 0.05),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 12.0, vertical: 12.0),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                  'Name: ${deliveryMenModel.fullName!}'),
+                                              SizedBox(
+                                                  height: size.height * 0.01),
+                                              Row(
+                                                children: [
+                                                  Text("Ratings: "),
+                                                  RatingBarIndicator(
+                                                    rating: double.parse(
+                                                        deliveryMenModel
+                                                            .ratings!),
+                                                    itemBuilder:
+                                                        (context, index) =>
+                                                            Icon(
+                                                      _selectedIcon ??
+                                                          Icons.star,
+                                                      color: Colors.amber,
+                                                    ),
+                                                    itemCount: 5,
+                                                    itemSize: 13.0,
+                                                    unratedColor: Colors.amber
+                                                        .withAlpha(85),
+                                                    direction: Axis.horizontal,
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(
+                                                  height: size.height * 0.01),
+                                              Text(
+                                                  "Email: ${deliveryMenModel.email}"),
+                                              SizedBox(
+                                                  height: size.height * 0.01),
+                                              Text(
+                                                  "Address: ${deliveryMenModel.address}"),
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),

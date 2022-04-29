@@ -3,7 +3,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:shop_app/admin/adminHomePage/adminHomePage.dart';
 import 'package:shop_app/deliverPanel/delivery.dart';
 import 'package:shop_app/pages/homepage/homePage.dart';
@@ -28,12 +27,10 @@ Future<void> main() async {
   print("role: " + role.toString());
 
   runApp(
-    Phoenix(
-      child: MyApp(
-        title: title,
-        login: login,
-        role: role,
-      ),
+    MyApp(
+      title: title,
+      login: login,
+      role: role,
     ),
   );
 }

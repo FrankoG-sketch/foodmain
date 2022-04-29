@@ -62,6 +62,7 @@ class Diary extends StatelessWidget {
                           heroTag: allFoodsModel.img,
                           name: allFoodsModel.name,
                           price: allFoodsModel.price,
+                          rating: allFoodsModel.rating,
                         ),
                       ),
                       child: Padding(

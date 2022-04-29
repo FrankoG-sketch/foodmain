@@ -116,6 +116,22 @@ class _ProfileState extends State<Profile> {
                                 keyButton4: keyButton4,
                               ),
                               ExistApp(size: size),
+                              TextButton(
+                                onPressed: () async {
+                                  var files = await FirebaseFirestore.instance
+                                      .collection('PopularProducts')
+                                      .snapshots()
+                                      .first;
+                                  for (var file in files.docs) {
+                                    Map<String, dynamic> data = file.data();
+                                    data.addAll({"tag": "popular items"});
+                                    FirebaseFirestore.instance
+                                        .collection('foodJamChristiana')
+                                        .add(data);
+                                  }
+                                },
+                                child: Text("Change Data"),
+                              ),
                               SizedBox(height: size.height * 0.20),
                             ],
                           ),

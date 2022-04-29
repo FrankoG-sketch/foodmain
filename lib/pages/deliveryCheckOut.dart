@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/Authentication/auth.dart';
 
@@ -178,7 +177,8 @@ class _DeliveryCheckOutState extends State<DeliveryCheckOut> {
                                               "uid": uid,
                                               "date": date,
                                               "products infor":
-                                                  this.widget.documents
+                                                  this.widget.documents,
+                                              "selected personal": null
                                             }).then((value) {
                                               Fluttertoast.showToast(
                                                 msg:

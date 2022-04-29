@@ -13,6 +13,7 @@ class ViewClients extends StatefulWidget {
 class _ViewClientsState extends State<ViewClients> {
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return FutureBuilder(
       future: getCurrentUID(),
       builder: (context, snapshot) {
@@ -57,21 +58,25 @@ class _ViewClientsState extends State<ViewClients> {
                         horizontal: 8.0, vertical: 8.0),
                     child: Card(
                       child: ListTile(
-                        leading: Image(
-                          image: NetworkImage(userModel.imgUrl!),
-                          loadingBuilder: (context, child, progress) {
-                            return progress == null
-                                ? child
-                                : Center(child: CircularProgressIndicator());
-                          },
-                          errorBuilder: (BuildContext context, Object exception,
-                              StackTrace? stackTrace) {
-                            return Padding(
-                              padding: const EdgeInsets.all(18.0),
-                              child: Icon(Icons.broken_image_outlined),
-                            );
-                          },
-                          fit: BoxFit.cover,
+                        leading: SizedBox(
+                          height: size.height * 0.10,
+                          //width: size.width * 0.10,
+                          child: Image(
+                            image: NetworkImage(userModel.imgUrl!),
+                            loadingBuilder: (context, child, progress) {
+                              return progress == null
+                                  ? child
+                                  : Center(child: CircularProgressIndicator());
+                            },
+                            errorBuilder: (BuildContext context,
+                                Object exception, StackTrace? stackTrace) {
+                              return Padding(
+                                padding: const EdgeInsets.all(18.0),
+                                child: Icon(Icons.broken_image_outlined),
+                              );
+                            },
+                            fit: BoxFit.cover,
+                          ),
                         ),
                         title: Text(userModel.fullName!),
                         subtitle: Column(

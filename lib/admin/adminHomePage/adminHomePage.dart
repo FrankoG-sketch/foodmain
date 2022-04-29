@@ -44,287 +44,303 @@ class _AdminPanelState extends State<AdminPanel> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       drawer: AdminDrawerClass(),
-      body: CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(vertical: 30.0),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 35.0),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        "Welcome: $email",
-                        style: TextStyle(
-                            fontSize: 18.0, fontWeight: FontWeight.w600),
-                      ),
-                    ],
-                  )
-                ],
-              ),
+      body: Container(
+        height: size.height,
+        child: CustomScrollView(
+          physics: BouncingScrollPhysics(),
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(vertical: 30.0),
             ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(vertical: 20.0),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 35.0, vertical: 20),
-              child: Column(
-                children: [
-                  Row(children: [
-                    Text(
-                      "Services",
-                      style: TextStyle(
-                          fontSize: 20.0, fontWeight: FontWeight.bold),
-                    )
-                  ]),
-                ],
-              ),
-            ),
-          ),
-          // SliverPadding(
-          //   padding: const EdgeInsets.symmetric(vertical: 20.0),
-          // ),
-          SliverGrid.count(
-            crossAxisCount: 2,
-            mainAxisSpacing: 20.0,
-            crossAxisSpacing: 1.0,
-            childAspectRatio: 16 / 9,
-            children: [
-              InkWell(
-                onTap: () => openDialog(context, _formkey,
-                    confirmPasswordController, '/adminInvertory'),
-                child: AdminCards(
-                  color: Color.fromARGB(255, 104, 194, 131),
-                  widget: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Inventory",
-                        style: TextStyle(color: Colors.white, fontSize: 18.0),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              InkWell(
-                onTap: () =>
-                    Navigator.pushNamed(context, '/adminPanelDeliveryView'),
-                child: AdminCards(
-                  color: Color.fromARGB(255, 8, 146, 38),
-                  widget: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Delivery Men",
-                        style: TextStyle(color: Colors.white, fontSize: 18.0),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              InkWell(
-                onTap: () => Navigator.pushNamed(context, '/deliveryOrders'),
-                child: AdminCards(
-                  color: Color.fromARGB(255, 52, 139, 99),
-                  widget: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Delivery Orders",
-                        style: TextStyle(color: Colors.white, fontSize: 18.0),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              InkWell(
-                onTap: () => Navigator.pushNamed(context, '/adminFoodFilter'),
-                child: AdminCards(
-                  color: Color.fromARGB(255, 125, 211, 122),
-                  widget: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Food Filter",
-                        style: TextStyle(color: Colors.white, fontSize: 18.0),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SliverPadding(padding: const EdgeInsets.symmetric(vertical: 10)),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 35.0, vertical: 20),
-              child: Column(
-                children: [
-                  Row(children: [
-                    Text(
-                      "Business Data",
-                      style: TextStyle(
-                          fontSize: 20.0, fontWeight: FontWeight.bold),
-                    )
-                  ]),
-                ],
-              ),
-            ),
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate(
-              [
-                InkWell(
-                  onTap: () => Navigator.pushNamed(
-                    context,
-                    '/adminFeedBack',
-                  ),
-                  child: StreamBuilder(
-                      stream: FirebaseFirestore.instance
-                          .collection("FeedBack")
-                          .snapshots(),
-                      builder:
-                          (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                        if (!snapshot.hasData)
-                          return Center(child: CircularProgressIndicator());
-                        else if (snapshot.data!.docs.isEmpty)
-                          return Center(
-                            child: Text("No Orders"),
-                          );
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 35.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              color: snapshot.data!.docs.length < 30
-                                  ? Theme.of(context).primaryColor
-                                  : Colors.red,
-                            ),
-                            height: size.height * 0.10,
-                            width: double.infinity,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 35.0, vertical: 20),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Customers Issues: ${snapshot.data!.docs.length}",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 18.0),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                ),
-                SizedBox(height: size.height * 0.02),
-                InkWell(
-                  onTap: () => Navigator.pushNamed(
-                    context,
-                    '/viewClients',
-                  ),
-                  child: StreamBuilder(
-                      stream: FirebaseFirestore.instance
-                          .collection("Users")
-                          .where("role", isEqualTo: 'User')
-                          .snapshots(),
-                      builder:
-                          (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                        if (!snapshot.hasData)
-                          return Center(child: CircularProgressIndicator());
-                        else if (snapshot.data!.docs.isEmpty)
-                          return Center(
-                            child: Text("No Orders"),
-                          );
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 35.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              color: Color.fromARGB(255, 125, 211, 122),
-                            ),
-                            height: size.height * 0.10,
-                            width: double.infinity,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 35.0, vertical: 20),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Clients: ${snapshot.data!.docs.length}",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 18.0),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                ),
-                SizedBox(height: size.height * 0.02),
-                StreamBuilder(
-                    stream: FirebaseFirestore.instance
-                        .collection("Users")
-                        .where("role", isEqualTo: 'Delivery')
-                        .snapshots(),
-                    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (!snapshot.hasData)
-                        return Center(child: CircularProgressIndicator());
-                      else if (snapshot.data!.docs.isEmpty)
-                        return Center(
-                          child: Text("No Orders"),
-                        );
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 35.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                            color: Color.fromARGB(255, 52, 139, 99),
-                          ),
-                          height: size.height * 0.10,
-                          width: double.infinity,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 35.0, vertical: 20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Delivery Guys Count: ${snapshot.data!.docs.length}",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 18.0),
-                                )
-                              ],
-                            ),
-                          ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 35.0),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          "Welcome: $email",
+                          style: TextStyle(
+                              fontSize: 18.0, fontWeight: FontWeight.w600),
                         ),
-                      );
-                    }),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(vertical: 20.0),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 35.0, vertical: 20),
+                child: Column(
+                  children: [
+                    Row(children: [
+                      Text(
+                        "Services",
+                        style: TextStyle(
+                            fontSize: 20.0, fontWeight: FontWeight.bold),
+                      )
+                    ]),
+                  ],
+                ),
+              ),
+            ),
+            // SliverPadding(
+            //   padding: const EdgeInsets.symmetric(vertical: 20.0),
+            // ),
+            SliverGrid.count(
+              crossAxisCount: 2,
+              mainAxisSpacing: 20.0,
+              crossAxisSpacing: 1.0,
+              childAspectRatio: 16 / 9,
+              children: [
+                InkWell(
+                  onTap: () => openDialog(context, _formkey,
+                      confirmPasswordController, '/adminInvertory'),
+                  child: AdminCards(
+                    color: Color.fromARGB(255, 104, 194, 131),
+                    widget: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Inventory",
+                          style: TextStyle(color: Colors.white, fontSize: 18.0),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () =>
+                      Navigator.pushNamed(context, '/adminAddSupermarket'),
+                  child: AdminCards(
+                    color: Color.fromARGB(255, 8, 146, 38),
+                    widget: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Supermarket",
+                          style: TextStyle(color: Colors.white, fontSize: 18.0),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () => Navigator.pushNamed(context, '/deliveryOrders'),
+                  child: AdminCards(
+                    color: Color.fromARGB(255, 52, 139, 99),
+                    widget: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Delivery Orders",
+                          style: TextStyle(color: Colors.white, fontSize: 18.0),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () => Navigator.pushNamed(context, '/adminFoodFilter'),
+                  child: AdminCards(
+                    color: Color.fromARGB(255, 125, 211, 122),
+                    widget: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Food Filter",
+                          style: TextStyle(color: Colors.white, fontSize: 18.0),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
-          )
-        ],
+            SliverPadding(padding: const EdgeInsets.symmetric(vertical: 10)),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 35.0, vertical: 20),
+                child: Column(
+                  children: [
+                    Row(children: [
+                      Text(
+                        "Business Data",
+                        style: TextStyle(
+                            fontSize: 20.0, fontWeight: FontWeight.bold),
+                      )
+                    ]),
+                  ],
+                ),
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate(
+                [
+                  InkWell(
+                    onTap: () => Navigator.pushNamed(
+                      context,
+                      '/adminFeedBack',
+                    ),
+                    child: StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection("FeedBack")
+                            .snapshots(),
+                        builder:
+                            (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (!snapshot.hasData)
+                            return Center(child: CircularProgressIndicator());
+                          else if (snapshot.data!.docs.isEmpty)
+                            return Center(
+                              child: Text("No Orders"),
+                            );
+                          return Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 35.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                color: snapshot.data!.docs.length < 30
+                                    ? Theme.of(context).primaryColor
+                                    : Colors.red,
+                              ),
+                              height: size.height * 0.10,
+                              width: double.infinity,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 35.0, vertical: 20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Customers Issues: ${snapshot.data!.docs.length}",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 18.0),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                  ),
+                  SizedBox(height: size.height * 0.02),
+                  InkWell(
+                    onTap: () => Navigator.pushNamed(
+                      context,
+                      '/viewClients',
+                    ),
+                    child: StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection("Users")
+                            .where("role", isEqualTo: 'User')
+                            .snapshots(),
+                        builder:
+                            (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (!snapshot.hasData)
+                            return Center(child: CircularProgressIndicator());
+                          else if (snapshot.data!.docs.isEmpty)
+                            return Center(
+                              child: Text("No Orders"),
+                            );
+                          return Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 35.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                color: Color.fromARGB(255, 125, 211, 122),
+                              ),
+                              height: size.height * 0.10,
+                              width: double.infinity,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 35.0, vertical: 20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Clients: ${snapshot.data!.docs.length}",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 18.0),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                  ),
+                  SizedBox(height: size.height * 0.02),
+                  InkWell(
+                    onTap: (() => Navigator.pushNamed(
+                        context, '/adminPanelDeliveryView')),
+                    child: StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection("Users")
+                            .where("role", isEqualTo: 'Delivery')
+                            .snapshots(),
+                        builder:
+                            (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (!snapshot.hasData)
+                            return Center(child: CircularProgressIndicator());
+                          else if (snapshot.data!.docs.isEmpty)
+                            return Center(
+                              child: Text("No Orders"),
+                            );
+                          return Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 35.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                color: Color.fromARGB(255, 52, 139, 99),
+                              ),
+                              height: size.height * 0.10,
+                              width: double.infinity,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 35.0, vertical: 20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Delivery Personnel Count: ${snapshot.data!.docs.length}",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 18.0),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                  ),
+                ],
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(vertical: 100.0),
+            ),
+          ],
+        ),
       ),
     );
   }
