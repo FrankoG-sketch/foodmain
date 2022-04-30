@@ -1,30 +1,50 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shop_app/Model/AllFoodModel.dart';
 import 'package:shop_app/admin/Admin%20Authentication/adminAuthentication.dart';
 import 'package:shop_app/pages/iconWidgetPages/searchDelegate.dart';
 import 'package:shop_app/pages/productDetails.dart';
+import 'package:shop_app/utils/store_provider.dart';
 
-class Starch extends StatelessWidget {
+class Starch extends ConsumerWidget {
   const Starch({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     Size size = MediaQuery.of(context).size;
     return FutureBuilder(
       future: getCurrentUID(),
       builder: (context, snapshot) {
         return StreamBuilder(
           stream: FirebaseFirestore.instance
-              .collection("Starch")
+              .collection(ref.watch(storeProvider))
               .orderBy("name")
+              .where("tag", isEqualTo: "starch")
               .snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (!snapshot.hasData)
               return Center(child: CircularProgressIndicator());
             else if (snapshot.data!.docs.isEmpty)
-              return Center(
-                child: Text("No Food For this Segment"),
+              return Scaffold(
+                appBar: AppBar(
+                  title: Text("Starch"),
+                  backgroundColor: Theme.of(context).primaryColor,
+                ),
+                body: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 35.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                          "Food For this Segment is currently not available at this supermarket, please switch to the next branch and try again."),
+                      TextButton(
+                          onPressed: () =>
+                              Navigator.pushNamed(context, '/profile'),
+                          child: Text("Switch Branch")),
+                    ],
+                  ),
+                ),
               );
             return Scaffold(
               appBar: AppBar(
@@ -35,8 +55,8 @@ class Starch extends StatelessWidget {
                       onPressed: () {
                         showSearch(
                           context: context,
-                          delegate:
-                              MySearchDelegate(snapshot.data!.docs, "Starch"),
+                          delegate: MySearchDelegate(snapshot.data!.docs,
+                              ref.watch(storeProvider), "starch"),
                         );
                       },
                       icon: Icon(Icons.search))

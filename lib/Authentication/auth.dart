@@ -9,6 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/utils/google_sign_in.dart';
 import 'package:shop_app/utils/widgets.dart';
 
+import '../utils/magic_strings.dart';
+
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 getCurrentUser() async {
@@ -116,10 +118,9 @@ class Authentication {
           Colors.green);
 
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-      sharedPreferences.setString('name', name);
-      sharedPreferences.setString('address', address);
-      sharedPreferences.setString('email', email);
+      sharedPreferences.setString(SharedPreferencesNames.name, name);
+      sharedPreferences.setString(SharedPreferencesNames.address, address);
+      sharedPreferences.setString(SharedPreferencesNames.email, email);
 
       Navigator.of(context).pushNamedAndRemoveUntil(
           '/homePage', (Route<dynamic> route) => false);
@@ -394,7 +395,7 @@ class Authentication {
           .set(userTokenDataObject);
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('email', email);
+      prefs.setString(SharedPreferencesNames.email, email);
 
       final DocumentSnapshot snapshot = await FirebaseFirestore.instance
           .collection("Users")
@@ -427,14 +428,15 @@ class Authentication {
                 Navigator.of(context).pushNamedAndRemoveUntil(
                     '/homePage', (Route<dynamic> route) => false);
 
-                prefs.setString('name', fullName);
-                prefs.setString('address', address);
+                prefs.setString(SharedPreferencesNames.name, fullName);
+                prefs.setString(SharedPreferencesNames.address, address);
               } else if (role == 'Admin') {
                 Navigator.of(context).pushNamedAndRemoveUntil(
                     '/adminPanel', (Route<dynamic> route) => false);
                 var hashedPassword =
                     new DBCrypt().hashpw(password, DBCrypt().gensalt());
-                prefs.setString("password", hashedPassword);
+                prefs.setString(
+                    SharedPreferencesNames.password, hashedPassword);
               } else if (role == 'Delivery') {
                 Navigator.of(context).pushNamedAndRemoveUntil(
                     '/deliveryPanel', (Route<dynamic> route) => false);
@@ -443,7 +445,7 @@ class Authentication {
           },
         );
 
-        prefs.setString('role', role);
+        prefs.setString(SharedPreferencesNames.role, role);
       }
     } on FirebaseException catch (e) {
       callBack();

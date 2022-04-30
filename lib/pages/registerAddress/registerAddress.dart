@@ -7,6 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/Authentication/auth.dart';
 import 'package:shop_app/utils/widgets.dart';
 
+import '../../utils/magic_strings.dart';
+
 class RegisterAddress extends StatefulWidget {
   const RegisterAddress({Key? key}) : super(key: key);
 
@@ -63,7 +65,7 @@ class _RegisterAddressState extends State<RegisterAddress> {
                   var uid = await getCurrentUID();
 
                   sharedPreferences.setString(
-                      'address', addressController.text);
+                      SharedPreferencesNames.address, addressController.text);
 
                   FirebaseFirestore.instance
                       .collection("Users")

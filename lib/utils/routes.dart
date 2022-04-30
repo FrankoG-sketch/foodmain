@@ -219,3 +219,7 @@ class RouteGenerator {
     );
   }
 }
+
+class RouteNames {
+  static const String editDeliveryReview = 'editDeliveryReview';
+}

@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shop_app/Authentication/auth.dart';
 import 'package:shop_app/Model/specialModel.dart';
 import 'package:shop_app/pages/productDetails.dart';
+import 'package:shop_app/utils/store_provider.dart';
 
-class Specialitems extends StatelessWidget {
+class Specialitems extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
@@ -19,8 +21,11 @@ class Specialitems extends StatelessWidget {
           future: getCurrentUID(),
           builder: (context, snapshot) {
             return StreamBuilder(
-              stream:
-                  FirebaseFirestore.instance.collection("Special").snapshots(),
+              stream: FirebaseFirestore.instance
+                  .collection(ref.watch(storeProvider))
+                  .orderBy("name")
+                  .where("tag", isEqualTo: "special items")
+                  .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (!snapshot.hasData)
                   return Center(child: CircularProgressIndicator());

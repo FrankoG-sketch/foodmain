@@ -1,15 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shop_app/Authentication/auth.dart';
 import 'package:shop_app/Model/productModel.dart';
 import 'package:shop_app/pages/productDetails.dart';
+import 'package:shop_app/utils/store_provider.dart';
 
-class ProductPage extends StatefulWidget {
+class ProductPage extends ConsumerStatefulWidget {
   @override
-  _ProductPageState createState() => _ProductPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _ProductPageState();
 }
 
-class _ProductPageState extends State<ProductPage> {
+class _ProductPageState extends ConsumerState<ProductPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -24,7 +26,9 @@ class _ProductPageState extends State<ProductPage> {
           builder: (context, snapshot) {
             return StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
-                  .collection('PopularProducts')
+                  .collection(ref.watch(storeProvider))
+                  .where('tag', isEqualTo: 'popular items')
+                  .orderBy("name")
                   .snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -33,39 +37,38 @@ class _ProductPageState extends State<ProductPage> {
                 else if (snapshot.data!.docs.isEmpty)
                   return Column(
                     children: <Widget>[
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).canvasColor,
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(75),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).canvasColor,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(75),
+                          ),
+                        ),
+                        child: ClipPath(
+                          clipper: ShapeBorderClipper(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(75),
+                              ),
                             ),
                           ),
-                          child: ClipPath(
-                            clipper: ShapeBorderClipper(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(75),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height,
+                            child: Column(
+                              children: <Widget>[
+                                SizedBox(height: 50.0),
+                                Center(
+                                  child: Text("Opps!!!! no goods available"),
                                 ),
-                              ),
-                            ),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width,
-                              height: MediaQuery.of(context).size.height,
-                              child: Column(
-                                children: <Widget>[
-                                  SizedBox(height: 50.0),
-                                  Center(
-                                    child: Text("Opps!!!! no goods available"),
-                                  ),
-                                ],
-                              ),
+                              ],
                             ),
                           ),
                         ),
                       ),
                     ],
                   );
+                print(snapshot.data!.docs.length);
                 return Container(
                   height: size.height,
                   width: double.infinity,

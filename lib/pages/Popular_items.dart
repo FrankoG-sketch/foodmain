@@ -1,15 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shop_app/Authentication/auth.dart';
 import 'package:shop_app/Model/productModel.dart';
 import 'package:shop_app/pages/productDetails.dart';
+import 'package:shop_app/utils/store_provider.dart';
 
-class Popularitems extends StatelessWidget {
+class Popularitems extends ConsumerWidget {
   const Popularitems({Key? key, this.size}) : super(key: key);
   final Size? size;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -20,7 +22,9 @@ class Popularitems extends StatelessWidget {
           builder: (context, snapshot) {
             return StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
-                  .collection('PopularProducts')
+                  .collection(ref.watch(storeProvider))
+                  .where("tag", isEqualTo: "popular products")
+                  .orderBy("name")
                   .snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {

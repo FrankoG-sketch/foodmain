@@ -1,37 +1,63 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shop_app/admin/adminHomePage/adminHomePage.dart';
 import 'package:shop_app/deliverPanel/delivery.dart';
 import 'package:shop_app/pages/homepage/homePage.dart';
 import 'package:shop_app/pages/sign%20in/signIn.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shop_app/utils/magic_strings.dart';
 import 'package:shop_app/utils/routes.dart';
+
+import 'Model/supermarketModel.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final title = "Food";
   await Firebase.initializeApp();
+  // FirebaseFirestore.instance.settings =
+  //     Settings(cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED);
+  // FirebaseFirestore.instance.settings = Settings(persistenceEnabled: true);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessaginBackgroundHandler);
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-  String? login = sharedPreferences.getString('email');
-  String? role = sharedPreferences.getString('role');
+  String? login = sharedPreferences.getString(SharedPreferencesNames.email);
+  String? role = sharedPreferences.getString(SharedPreferencesNames.role);
 
+  try {
+    var store = await FirebaseFirestore.instance
+        .collection('Supermarket')
+        .withConverter(
+          fromFirestore: (snapshot, _) =>
+              SuperMarketModel.fromJson(snapshot.data()!),
+          toFirestore: (SuperMarketModel model, _) => model.toJson(),
+        )
+        .snapshots()
+        .first;
+    if (sharedPreferences.getString(SharedPreferencesNames.selectedStore) ==
+        null) {
+      await sharedPreferences.setString(SharedPreferencesNames.selectedStore,
+          store.docs.first.data().storeId!);
+    }
+  } catch (e) {
+    print('data error: $e');
+  }
   print("login: " + login.toString());
   print("role: " + role.toString());
-
   runApp(
-    MyApp(
+    ProviderScope(
+        child: MyApp(
       title: title,
       login: login,
       role: role,
-    ),
+    )),
   );
 }
 
@@ -61,7 +87,6 @@ class MyApp extends StatelessWidget {
   final String title;
   final String? login;
   final String? role;
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(

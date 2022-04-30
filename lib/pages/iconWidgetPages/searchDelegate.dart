@@ -5,7 +5,8 @@ import 'package:shop_app/pages/productDetails.dart';
 class MySearchDelegate extends SearchDelegate {
   final collection;
   final documents;
-  MySearchDelegate(this.documents, this.collection);
+  final tag;
+  MySearchDelegate(this.documents, this.collection, this.tag);
   @override
   Widget? buildLeading(BuildContext context) => IconButton(
         icon: Icon(Icons.arrow_back),
@@ -31,7 +32,10 @@ class MySearchDelegate extends SearchDelegate {
   Widget buildSuggestions(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return StreamBuilder(
-        stream: FirebaseFirestore.instance.collection(collection).snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection(collection)
+            .where("tag", isEqualTo: tag)
+            .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData)
             return Center(child: CircularProgressIndicator());

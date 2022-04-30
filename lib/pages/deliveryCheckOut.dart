@@ -5,6 +5,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/Authentication/auth.dart';
 
+import '../utils/magic_strings.dart';
+
 class DeliveryCheckOut extends StatefulWidget {
   DeliveryCheckOut({required this.documents});
   final documents;
@@ -26,7 +28,8 @@ class _DeliveryCheckOutState extends State<DeliveryCheckOut> {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     if (mounted)
       setState(() {
-        addressSaved = sharedPreferences.getString('address');
+        addressSaved =
+            sharedPreferences.getString(SharedPreferencesNames.address);
         address.text = '$addressSaved';
         pageLoad = false;
       });

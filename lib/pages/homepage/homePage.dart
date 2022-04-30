@@ -19,6 +19,8 @@ import 'package:shop_app/utils/icon.dart';
 import 'package:shop_app/utils/jam_icons_icons.dart';
 import 'package:shop_app/utils/widgets.dart';
 
+import '../../utils/magic_strings.dart';
+
 class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
@@ -199,7 +201,7 @@ class _HomeContentState extends State<HomeContent> {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
     setState(() {
-      fullName = sharedPreferences.getString('name');
+      fullName = sharedPreferences.getString(SharedPreferencesNames.name);
       var names = fullName.split(" ");
       firstName = names[0];
     });
@@ -302,10 +304,10 @@ class _HomeContentState extends State<HomeContent> {
               ),
             ),
           ),
-          SpecialHeader(),
+          //SpecialHeader(),
           SpecialBody(widget: widget, size: size),
           SliverPadding(padding: const EdgeInsets.only(top: 30.0)),
-          PopularProductHeader(),
+          // PopularProductHeader(),
           ProductBody(widget: widget),
           SliverPadding(padding: const EdgeInsets.only(top: 30.0)),
           ServiceHeader(),

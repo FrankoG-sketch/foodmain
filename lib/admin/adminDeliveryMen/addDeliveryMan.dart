@@ -7,6 +7,8 @@ import 'package:shop_app/admin/Admin%20Authentication/adminAuthentication.dart';
 import 'package:shop_app/admin/adminUtils.dart';
 import 'package:shop_app/utils/widgets.dart';
 
+import '../../utils/magic_strings.dart';
+
 class AddDeliveryMen extends StatefulWidget {
   const AddDeliveryMen({Key? key, this.tabController}) : super(key: key);
 
@@ -44,7 +46,8 @@ class _AddDeliveryMenState extends State<AddDeliveryMen> {
 
   get getSharePreferenceData async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    setState(() => encrpytedPassword = sharedPreferences.getString("password"));
+    setState(() => encrpytedPassword =
+        sharedPreferences.getString(SharedPreferencesNames.password));
   }
 
   @override

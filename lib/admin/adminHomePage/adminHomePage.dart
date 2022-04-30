@@ -7,6 +7,8 @@ import 'package:shop_app/admin/adminDrawer/adminDrawer.dart';
 import 'package:shop_app/admin/adminUtils.dart';
 import 'package:shop_app/utils/widgets.dart';
 
+import '../../utils/magic_strings.dart';
+
 class AdminPanel extends StatefulWidget {
   @override
   _AdminPanelState createState() => _AdminPanelState();
@@ -32,8 +34,9 @@ class _AdminPanelState extends State<AdminPanel> {
   get getSharedPreferenceData async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     setState(() {
-      encrpytedPassword = sharedPreferences.getString("password");
-      email = sharedPreferences.getString("email");
+      encrpytedPassword =
+          sharedPreferences.getString(SharedPreferencesNames.password);
+      email = sharedPreferences.getString(SharedPreferencesNames.email);
     });
   }
 
@@ -118,7 +121,7 @@ class _AdminPanelState extends State<AdminPanel> {
                 ),
                 InkWell(
                   onTap: () =>
-                      Navigator.pushNamed(context, '/adminAddSupermarket'),
+                      Navigator.pushNamed(context, '/adminPanelDeliveryView'),
                   child: AdminCards(
                     color: Color.fromARGB(255, 8, 146, 38),
                     widget: Column(
@@ -126,7 +129,7 @@ class _AdminPanelState extends State<AdminPanel> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Supermarket",
+                          "Delivery \nPersonnel",
                           style: TextStyle(color: Colors.white, fontSize: 18.0),
                         ),
                       ],
@@ -287,52 +290,47 @@ class _AdminPanelState extends State<AdminPanel> {
                         }),
                   ),
                   SizedBox(height: size.height * 0.02),
-                  InkWell(
-                    onTap: (() => Navigator.pushNamed(
-                        context, '/adminPanelDeliveryView')),
-                    child: StreamBuilder(
-                        stream: FirebaseFirestore.instance
-                            .collection("Users")
-                            .where("role", isEqualTo: 'Delivery')
-                            .snapshots(),
-                        builder:
-                            (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                          if (!snapshot.hasData)
-                            return Center(child: CircularProgressIndicator());
-                          else if (snapshot.data!.docs.isEmpty)
-                            return Center(
-                              child: Text("No Orders"),
-                            );
-                          return Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 35.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20)),
-                                color: Color.fromARGB(255, 52, 139, 99),
-                              ),
-                              height: size.height * 0.10,
-                              width: double.infinity,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 35.0, vertical: 20),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Delivery Personnel Count: ${snapshot.data!.docs.length}",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 18.0),
-                                    )
-                                  ],
-                                ),
+                  StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                          .collection("Users")
+                          .where("role", isEqualTo: 'Delivery')
+                          .snapshots(),
+                      builder:
+                          (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (!snapshot.hasData)
+                          return Center(child: CircularProgressIndicator());
+                        else if (snapshot.data!.docs.isEmpty)
+                          return Center(
+                            child: Text("No Orders"),
+                          );
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 35.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20)),
+                              color: Color.fromARGB(255, 52, 139, 99),
+                            ),
+                            height: size.height * 0.10,
+                            width: double.infinity,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 35.0, vertical: 20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Delivery Personnel Count: ${snapshot.data!.docs.length}",
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 18.0),
+                                  )
+                                ],
                               ),
                             ),
-                          );
-                        }),
-                  ),
+                          ),
+                        );
+                      }),
                 ],
               ),
             ),

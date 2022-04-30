@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/utils/widgets.dart';
 import '../../Authentication/auth.dart';
+import '../../utils/magic_strings.dart';
 
 class DeliveryProfile extends StatefulWidget {
   final Size size;
@@ -583,7 +584,9 @@ class _DeliveryProfileState extends State<DeliveryProfile> {
                                             .collection("User_Changes")
                                             .add(updatedDetails);
 
-                                        prefs.setString('email', email);
+                                        prefs.setString(
+                                            SharedPreferencesNames.email,
+                                            email);
 
                                         FirebaseFirestore.instance
                                             .collection("Users")

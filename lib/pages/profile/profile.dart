@@ -5,15 +5,22 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/Authentication/auth.dart';
+import 'package:shop_app/utils/store_provider.dart';
 import 'package:shop_app/utils/widgets.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
-class Profile extends StatefulWidget {
+import '../../Model/supermarketModel.dart';
+import '../../utils/magic_strings.dart';
+
+// ref.read(storeProvider.notifier).updateStore('');
+
+class Profile extends ConsumerStatefulWidget {
   @override
   _ProfileState createState() => _ProfileState();
 }
@@ -22,7 +29,7 @@ enum PageEnum {
   foodFilter,
 }
 
-class _ProfileState extends State<Profile> {
+class _ProfileState extends ConsumerState<Profile> {
   var address;
   _onSelect(PageEnum value) {
     switch (value) {
@@ -34,6 +41,8 @@ class _ProfileState extends State<Profile> {
         break;
     }
   }
+
+  late String _selectedOption;
 
   TutorialCoachMark? tutorialCoachMark;
   List<TargetFocus> targets = [];
@@ -47,6 +56,7 @@ class _ProfileState extends State<Profile> {
     super.initState();
     initTargets();
     WidgetsBinding.instance!.addPostFrameCallback(_afterLayout);
+    _selectedOption = ref.read(storeProvider);
   }
 
   @override
@@ -58,6 +68,7 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: AppBar(
           actions: [
@@ -104,7 +115,7 @@ class _ProfileState extends State<Profile> {
 
                       if (snapshot.connectionState == ConnectionState.active)
                         return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 50.0),
+                          padding: const EdgeInsets.symmetric(vertical: 20.0),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -115,23 +126,129 @@ class _ProfileState extends State<Profile> {
                                 keyButton3: keyButton3,
                                 keyButton4: keyButton4,
                               ),
-                              ExistApp(size: size),
                               TextButton(
-                                onPressed: () async {
-                                  var files = await FirebaseFirestore.instance
-                                      .collection('PopularProducts')
-                                      .snapshots()
-                                      .first;
-                                  for (var file in files.docs) {
-                                    Map<String, dynamic> data = file.data();
-                                    data.addAll({"tag": "popular items"});
-                                    FirebaseFirestore.instance
-                                        .collection('foodJamChristiana')
-                                        .add(data);
-                                  }
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (builder) {
+                                        return StreamBuilder<
+                                                QuerySnapshot<
+                                                    SuperMarketModel>>(
+                                            stream: FirebaseFirestore.instance
+                                                .collection('Supermarket')
+                                                .withConverter(
+                                                  fromFirestore: (snapshot,
+                                                          _) =>
+                                                      SuperMarketModel.fromJson(
+                                                          snapshot.data()!),
+                                                  toFirestore:
+                                                      (SuperMarketModel model,
+                                                              _) =>
+                                                          model.toJson(),
+                                                )
+                                                .snapshots(),
+                                            builder: (context, snapshot) {
+                                              return StatefulBuilder(
+                                                  builder: (context, setState) {
+                                                return AlertDialog(
+                                                  title: Text(
+                                                      "Change Supermarket"),
+                                                  content:
+                                                      SingleChildScrollView(
+                                                    child: !snapshot.hasData
+                                                        ? Center(
+                                                            child:
+                                                                CircularProgressIndicator(),
+                                                          )
+                                                        : Column(
+                                                            children: [
+                                                              Text(
+                                                                  "By Changing the supermarket, not all products may"
+                                                                  " be available at the selected one."
+                                                                  " Also note thats the supermarket you will recieve the products from."),
+                                                              for (var storeName
+                                                                  in snapshot
+                                                                      .data!
+                                                                      .docs)
+                                                                ListTile(
+                                                                  title: Text(
+                                                                      storeName
+                                                                          .data()
+                                                                          .displayName!),
+                                                                  leading: Radio<
+                                                                      String>(
+                                                                    materialTapTargetSize:
+                                                                        MaterialTapTargetSize
+                                                                            .shrinkWrap,
+                                                                    //this me did a ask u g
+                                                                    value: storeName
+                                                                        .data()
+                                                                        .storeId!,
+                                                                    groupValue:
+                                                                        _selectedOption,
+                                                                    onChanged:
+                                                                        (value) {
+                                                                      setState(
+                                                                          () {
+                                                                        _selectedOption =
+                                                                            value!;
+                                                                      });
+                                                                    },
+                                                                    activeColor:
+                                                                        Theme.of(context)
+                                                                            .primaryColor,
+                                                                  ),
+                                                                ),
+                                                            ],
+                                                          ),
+                                                  ),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: Text('Cancel'),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        ref
+                                                            .read(storeProvider
+                                                                .notifier)
+                                                            .updateStore(
+                                                                _selectedOption);
+
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: Text('OK'),
+                                                    )
+                                                  ],
+                                                );
+                                              });
+                                            });
+                                      });
                                 },
-                                child: Text("Change Data"),
+                                child: Text(
+                                  "Change Supermarket",
+                                  style: TextStyle(fontSize: 16.0),
+                                ),
                               ),
+                              // TextButton(
+                              //     onPressed: () async {
+                              //       var files = await FirebaseFirestore.instance
+                              //           .collection('PopularProducts')
+                              //           .snapshots()
+                              //           .first;
+                              //       for (var file in files.docs) {
+                              //         Map<String, dynamic> data = file.data();
+                              //         data.addAll({"tag": "popular items"});
+                              //         FirebaseFirestore.instance
+                              //             .collection('foodJamMandeville')
+                              //             .add(data);
+                              //       }
+                              //     },
+                              //     child: Text("add")),
+                              SizedBox(height: size.height * 0.02),
+                              ExistApp(size: size),
                               SizedBox(height: size.height * 0.20),
                             ],
                           ),
@@ -147,6 +264,12 @@ class _ProfileState extends State<Profile> {
       ),
     );
   }
+
+  // VoidCallback christiana() =>
+  //     ref.read(storeProvider.notifier).updateStore('foodJamChristiana');
+
+  // VoidCallback mandeville() =>
+  //     ref.read(storeProvider.notifier).updateStore('foodJamMandeville');
 
   Future<void> initTargets() async {
     targets.add(
@@ -799,7 +922,8 @@ class _UserDataState extends State<UserData> {
                               "uid": uid,
                             };
 
-                            sharedPreferences.setString('address', address);
+                            sharedPreferences.setString(
+                                SharedPreferencesNames.address, address);
 
                             FirebaseFirestore.instance
                                 .collection("User_Updated_Credentials")
@@ -1062,7 +1186,9 @@ class _UserDataState extends State<UserData> {
                                             .collection("User_Changes")
                                             .add(updatedDetails);
 
-                                        prefs.setString('email', email);
+                                        prefs.setString(
+                                            SharedPreferencesNames.email,
+                                            email);
 
                                         FirebaseFirestore.instance
                                             .collection("Users")
@@ -1148,8 +1274,8 @@ class ProfileImage extends StatelessWidget {
                         children: [
                           ClipOval(
                             child: SizedBox(
-                              width: 180.0,
-                              height: 180.0,
+                              width: 150.0,
+                              height: 150.0,
                               child: Image(
                                 image: NetworkImage(
                                   "${snapshot.data?['imgUrl']}",
