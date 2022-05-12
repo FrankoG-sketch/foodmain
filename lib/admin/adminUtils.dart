@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 
+Widget constraintBox(take, context) {
+  return ConstrainedBox(
+      child: take,
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width * 0.60,
+      ));
+}
+
 InputDecoration adminTextField(BuildContext context, String labelText) {
   return InputDecoration(
     labelText: labelText,

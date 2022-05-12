@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shop_app/Authentication/auth.dart';
 import 'package:shop_app/Model/specialModel.dart';
 import 'package:shop_app/pages/productDetails.dart';
+import 'package:shop_app/utils/magic_strings.dart';
 import 'package:shop_app/utils/store_provider.dart';
 
 class Specialitems extends ConsumerWidget {
@@ -78,7 +79,7 @@ class Specialitems extends ConsumerWidget {
                       return InkWell(
                         onTap: () => Navigator.pushNamed(
                           context,
-                          '/productDetails',
+                          RouteNames.productDetails,
                           arguments: ProductDetails(
                             heroTag: specialModel.imgPath,
                             name: specialModel.name,

@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/Authentication/auth.dart';
+import 'package:shop_app/Model/userDeliveryInformationModel.dart';
+import 'package:shop_app/utils/magic_strings.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:intl/intl.dart';
 
@@ -20,7 +23,7 @@ class _DeliveryState extends State<Delivery> {
   _onSelect(PageEnum value) async {
     switch (value) {
       case PageEnum.foodFilter:
-        await Navigator.pushNamed(context, '/deliveryWorkers');
+        await Navigator.pushNamed(context, RouteNames.deliveryWorkers);
         break;
       default:
         print("Something went wrong");
@@ -223,7 +226,10 @@ class _DeliveryListState extends State<DeliveryList> {
                           return Divider();
                         },
                         itemBuilder: (context, index) {
-                          DocumentSnapshot point = snapshot.data!.docs[index];
+                          DocumentSnapshot keyword = snapshot.data!.docs[index];
+                          UserDeliveryModel userDeliveryModel =
+                              UserDeliveryModel.fromJson(
+                                  keyword.data() as Map<String, dynamic>);
 
                           double total = 0;
                           for (var i in snapshot.data!.docs[index]
@@ -231,147 +237,267 @@ class _DeliveryListState extends State<DeliveryList> {
                             total += double.parse(i['price']) *
                                 double.parse(i['Quantity']);
                           }
-                          return Column(
-                            children: [
-                              SingleChildScrollView(
-                                child: Card(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 35.0, vertical: 35.0),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Client name: ${point['Client name']}',
-                                              style: TextStyle(
-                                                fontFamily: 'PlayfairDisplay',
-                                                fontSize: 16.0,
-                                              ),
+                          return InkWell(
+                            onTap: userDeliveryModel.deliveryProgress !=
+                                    'pending'.toLowerCase()
+                                ? () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: Text("Task Failed"),
+                                            content: SingleChildScrollView(
+                                              child: Text(
+                                                  "Unfortunately, this order has already been shipped to you. We are sorry for any inconviences this may produce."),
                                             ),
-                                          ],
-                                        ),
-                                        SizedBox(height: size.height * 0.01),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Delivery Progress: ${point['Delivery Progress']}',
-                                              style: TextStyle(
-                                                fontFamily: 'PlayfairDisplay',
-                                                fontSize: 16.0,
-                                              ),
+                                            actions: [
+                                              TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Text("Ok"))
+                                            ],
+                                          );
+                                        });
+                                  }
+                                : () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (builder) {
+                                          return AlertDialog(
+                                            title: Text("Cancel Order"),
+                                            content: SingleChildScrollView(
+                                              child: Text(
+                                                  "By clicking yes, you are about cancel your order. This means this order will no longer be shipped to you and you'll be alerted as soon as possible about your refund."),
                                             ),
-                                          ],
-                                        ),
-                                        SizedBox(height: size.height * 0.01),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Date made: ${DateFormat.yMMMd().format(point['date'].toDate())}',
-                                              style: TextStyle(
-                                                fontFamily: 'PlayfairDisplay',
-                                                fontSize: 16.0,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: size.height * 0.01),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            if (point['selected personal'] ==
-                                                null) ...[
-                                              Text(
-                                                "Delivery Personnel: No Driver selected as yet",
-                                                style: TextStyle(
-                                                  fontFamily: 'PlayfairDisplay',
-                                                  fontSize: 16.0,
-                                                ),
-                                              ),
-                                            ] else
-                                              Text(
-                                                'Delivery Personnel: ${point['selected personal']}',
-                                                style: TextStyle(
-                                                  fontFamily: 'PlayfairDisplay',
-                                                  fontSize: 16.0,
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                        SizedBox(height: size.height * 0.01),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              "Total: \$$total",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: size.height * 0.01),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            for (var i
-                                                in point['products infor'])
-                                              Builder(builder: (context) {
-                                                double total = 0;
-                                                List items =
-                                                    point['products infor']
-                                                        .map((e) {
-                                                  if (e['user name'] ==
-                                                      i['user name']) return e;
-                                                }).toList();
-                                                items.forEach((element) {
-                                                  total += double.parse(
-                                                          element['price']) *
-                                                      int.parse(
-                                                          element['Quantity']);
-                                                });
+                                            actions: [
+                                              TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                  child: Text("Cancel")),
+                                              TextButton(
+                                                  onPressed: () async {
+                                                    var cancelledOrdersObject =
+                                                        {
+                                                      "Client name":
+                                                          userDeliveryModel
+                                                              .clientName,
+                                                      "Delivery Progress":
+                                                          userDeliveryModel
+                                                              .deliveryProgress,
+                                                      "Task Completed":
+                                                          userDeliveryModel
+                                                              .taskCompleted,
+                                                      "address":
+                                                          userDeliveryModel
+                                                              .address,
+                                                      "date made":
+                                                          userDeliveryModel
+                                                              .dateCancelled,
+                                                      "date cancelled":
+                                                          Timestamp.now(),
+                                                      "directions":
+                                                          userDeliveryModel
+                                                              .directions,
+                                                      "products infor":
+                                                          userDeliveryModel
+                                                              .productsInfo,
+                                                      "selected personal":
+                                                          userDeliveryModel
+                                                              .selectedPersonal,
+                                                      "uid":
+                                                          userDeliveryModel.uid,
+                                                      "refunded": false,
+                                                      "compoundKey":
+                                                          userDeliveryModel.uid
+                                                                  .toString()
+                                                                  .trim() +
+                                                              userDeliveryModel
+                                                                  .dateCancelled
+                                                                  .toString()
+                                                                  .trim()
+                                                    };
 
-                                                return Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      "Products: ",
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                    Row(
+                                                    FirebaseFirestore.instance
+                                                        .collection("Delivery")
+                                                        .doc(userDeliveryModel
+                                                            .uid
+                                                            .toString()
+                                                            .trim())
+                                                        .delete();
+
+                                                    FirebaseFirestore.instance
+                                                        .collection(
+                                                            "Cancelled Orders")
+                                                        .doc(userDeliveryModel
+                                                                .uid
+                                                                .toString()
+                                                                .trim() +
+                                                            userDeliveryModel
+                                                                .dateCancelled
+                                                                .toString()
+                                                                .trim())
+                                                        .set(
+                                                            cancelledOrdersObject);
+
+                                                    Navigator.pop(context);
+
+                                                    Fluttertoast.showToast(
+                                                        msg: "Order Cancelled");
+                                                  },
+                                                  child: Text("Ok"))
+                                            ],
+                                          );
+                                        });
+                                  },
+                            child: Column(
+                              children: [
+                                SingleChildScrollView(
+                                  child: Card(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 35.0, vertical: 35.0),
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Client name: ${userDeliveryModel.clientName}',
+                                                style: TextStyle(
+                                                  fontFamily: 'PlayfairDisplay',
+                                                  fontSize: 16.0,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: size.height * 0.01),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Delivery Progress: ${userDeliveryModel.deliveryProgress}',
+                                                style: TextStyle(
+                                                  fontFamily: 'PlayfairDisplay',
+                                                  fontSize: 16.0,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: size.height * 0.01),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Date made: ${DateFormat.yMMMd().format(userDeliveryModel.dateCancelled!.toDate())}',
+                                                style: TextStyle(
+                                                  fontFamily: 'PlayfairDisplay',
+                                                  fontSize: 16.0,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: size.height * 0.01),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              if (userDeliveryModel
+                                                      .selectedPersonal ==
+                                                  null) ...[
+                                                Text(
+                                                  "Delivery Personnel: No Driver selected as yet",
+                                                  style: TextStyle(
+                                                    fontFamily:
+                                                        'PlayfairDisplay',
+                                                    fontSize: 16.0,
+                                                  ),
+                                                ),
+                                              ] else
+                                                Text(
+                                                  'Delivery Personnel: ${userDeliveryModel.selectedPersonal}',
+                                                  style: TextStyle(
+                                                    fontFamily:
+                                                        'PlayfairDisplay',
+                                                    fontSize: 16.0,
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                          SizedBox(height: size.height * 0.01),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "Total: \$$total",
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: size.height * 0.01),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              for (var i in userDeliveryModel
+                                                  .productsInfo!)
+                                                Builder(
+                                                  builder: (context) {
+                                                    double total = 0;
+                                                    List items =
+                                                        userDeliveryModel
+                                                            .productsInfo!
+                                                            .map((e) {
+                                                      if (e['user name'] ==
+                                                          i['user name'])
+                                                        return e;
+                                                    }).toList();
+                                                    items.forEach((element) {
+                                                      total += double.parse(
+                                                              element[
+                                                                  'price']) *
+                                                          int.parse(element[
+                                                              'Quantity']);
+                                                    });
+
+                                                    return Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
                                                       children: [
-                                                        Text(i['name']),
                                                         Text(
-                                                            ' x ${i['Quantity']}'),
-                                                        Text(
-                                                            ' = \$${i['price']}')
+                                                          "Products: ",
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            Text(i['name']),
+                                                            Text(
+                                                                ' x ${i['Quantity']}'),
+                                                            Text(
+                                                                ' = \$${i['price']}')
+                                                          ],
+                                                        ),
                                                       ],
-                                                    ),
-                                                    // Text(
-                                                    //     'Product Total:  \$$total'),
-                                                  ],
-                                                );
-                                              })
-
-                                            // Text(
-                                            //     'Products: ${this.widget.documents[index]!['']}'),
-                                          ],
-                                        ),
-                                      ],
+                                                    );
+                                                  },
+                                                )
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           );
                         },
                       ),

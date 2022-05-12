@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/Authentication/auth.dart';
+import 'package:shop_app/utils/magic_strings.dart';
 import 'package:shop_app/utils/widgets.dart';
 
 class SignIn extends StatefulWidget {
@@ -81,7 +82,10 @@ class _SignInState extends State<SignIn> {
                             alignment: Alignment.bottomRight,
                             child: TextButton(
                               onPressed: () {
-                                Navigator.pushNamed(context, '/resetPassword');
+                                Navigator.pushNamed(
+                                  context,
+                                  RouteNames.resetPassword,
+                                );
                               },
                               child: Text(
                                 "Forgot Password?",
@@ -160,7 +164,10 @@ class _SignInState extends State<SignIn> {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.pushNamed(context, '/signUp');
+                                    Navigator.pushNamed(
+                                      context,
+                                      RouteNames.signUp,
+                                    );
                                   },
                                   child: Text(
                                     "Sign up",

@@ -233,14 +233,21 @@ class _DeliverySideListState extends State<DeliverySideList> {
                                   Row(
                                     children: [
                                       Text(
-                                          'Client Name: ${this.widget.documents[index]!['Client name']}'),
+                                        'Client Name: ${this.widget.documents[index]!['Client name']}',
+                                        maxLines: 1,
+                                      ),
                                     ],
                                   ),
                                   SizedBox(height: size.height * 0.01),
                                   Row(
                                     children: [
-                                      Text(
-                                          'Address: ${this.widget.documents[index]!['address']}'),
+                                      ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          maxWidth: size.width * 0.80,
+                                        ),
+                                        child: Text(
+                                            'Address: ${this.widget.documents[index]!['address']}'),
+                                      ),
                                     ],
                                   ),
                                   SizedBox(height: size.height * 0.01),

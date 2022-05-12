@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/Model/CartModel.dart';
 import 'package:shop_app/admin/AdminDeliveryList/adminDelivery.dart';
+import 'package:shop_app/admin/adminActiveOrders/activeOrders.dart';
 import 'package:shop_app/admin/adminClientView/adminViewClient.dart';
+import 'package:shop_app/admin/adminDashBoard/adminDashBoard.dart';
 import 'package:shop_app/admin/adminDeliveryMen/adminDeliveryMen.dart';
 import 'package:shop_app/admin/adminFeedBack/adminFeedBack.dart';
 import 'package:shop_app/admin/adminFoodFilter/adminFoodFilter.dart';
 import 'package:shop_app/admin/adminHomePage/adminHomePage.dart';
-import 'package:shop_app/admin/adminInventoryPage/inventoryPage.dart';
 import 'package:shop_app/admin/adminSupermarket/adminSupermarket.dart';
 import 'package:shop_app/deliverPanel/delivery.dart';
 import 'package:shop_app/deliverPanel/deliveryPanelProfilePage/deliveryProfilePage.dart';
@@ -35,18 +37,21 @@ import 'package:shop_app/pages/sign%20in/signIn.dart';
 import 'package:shop_app/pages/special_items.dart';
 import 'package:shop_app/pages/view%20ratings/viewRatings.dart';
 import 'package:shop_app/utils/ShippingPolicy.dart';
+import 'package:shop_app/utils/magic_strings.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case '/editDeliveryReview':
+      case RouteNames.adminDashBoard:
+        return MaterialPageRoute(builder: ((context) => DashBoard()));
+      case RouteNames.editDeliveryReview:
         EditReview? args = settings.arguments as EditReview?;
         return MaterialPageRoute(
             builder: ((context) => EditReview(
                   reviewDeliveryPersonnel: args!.reviewDeliveryPersonnel,
                   heroTag: args.heroTag,
                 )));
-      case '/createDeliveryReview':
+      case RouteNames.createDeliveryReview:
         CreateDeliveryReview? args =
             settings.arguments as CreateDeliveryReview?;
         return MaterialPageRoute(
@@ -56,7 +61,7 @@ class RouteGenerator {
               )),
         );
 
-      case '/deliveryWorkerRatings':
+      case RouteNames.deliveryWorkerRatings:
         DeliveryWorkerRatings? args =
             settings.arguments as DeliveryWorkerRatings?;
         return MaterialPageRoute(
@@ -68,10 +73,10 @@ class RouteGenerator {
               )),
         );
 
-      case '/adminAddSupermarket':
+      case RouteNames.adminAddSupermarket:
         return MaterialPageRoute(builder: (context) => AdminSupermarket());
 
-      case '/editRating':
+      case RouteNames.editRating:
         EditRatings? args = settings.arguments as EditRatings?;
         return MaterialPageRoute(
           builder: ((context) => EditRatings(
@@ -80,14 +85,14 @@ class RouteGenerator {
               )),
         );
 
-      case '/viewProductRatings':
+      case RouteNames.viewProductRatings:
         ViewProductRatings? args = settings.arguments as ViewProductRatings?;
         return MaterialPageRoute(
             builder: ((context) => ViewProductRatings(
                   productName: args!.productName,
                   heroTag: args.heroTag,
                 )));
-      case '/productRatings':
+      case RouteNames.productRatings:
         ProductRatings? args = settings.arguments as ProductRatings?;
         return MaterialPageRoute(
             builder: ((context) => ProductRatings(
@@ -95,100 +100,100 @@ class RouteGenerator {
                   rating: args.rating,
                   heroTag: args.heroTag,
                 )));
-      case '/viewClients':
+      case RouteNames.viewClients:
         return MaterialPageRoute(builder: ((context) => ViewClients()));
-      case '/adminFeedBack':
+      case RouteNames.adminFeedBack:
         return MaterialPageRoute(builder: ((context) => AdminFeedBack()));
-      case '/feedBack':
+      case RouteNames.feedBack:
         return MaterialPageRoute(builder: ((context) => FeedBackHelp()));
-      case '/shippingPolicy':
+      case RouteNames.shippingPolicy:
         return MaterialPageRoute(builder: ((context) => ShippingPolicy()));
 
-      case '/adminFoodFilter':
+      case RouteNames.adminFoodFilter:
         return MaterialPageRoute(builder: (((context) => AdminFoodFiler())));
-      case '/diary':
+      case RouteNames.dairy:
         return MaterialPageRoute(builder: ((context) => Diary()));
 
-      case '/starch':
+      case RouteNames.starch:
         return MaterialPageRoute(builder: ((context) => Starch()));
 
-      case '/protein':
+      case RouteNames.protein:
         return MaterialPageRoute(builder: ((context) => Protein()));
 
-      case '/fruits&Veg':
+      case RouteNames.fruitsAndVeg:
         return MaterialPageRoute(builder: ((context) => FruitsAndVeg()));
 
-      case '/allFoods':
+      case RouteNames.allFoods:
         return MaterialPageRoute(builder: ((context) => AllFoods()));
 
-      case '/deliveryOrders':
+      case RouteNames.deliveryOrders:
         return MaterialPageRoute(builder: (context) => AdminDeliveryList());
 
-      case '/profile':
+      case RouteNames.profile:
         return MaterialPageRoute(builder: (((context) => Profile())));
 
-      case '/deliveryProfilePage':
+      case RouteNames.deliveryProfilePage:
         DeliveryProfile? args = settings.arguments as DeliveryProfile?;
         return MaterialPageRoute(
           builder: ((context) => DeliveryProfile(size: args!.size)),
         );
 
-      case '/adminInvertory':
-        return MaterialPageRoute(builder: (((context) => Inventory())));
+      case RouteNames.adminInvertory:
+        return MaterialPageRoute(builder: (((context) => ActiveOrders())));
 
-      case '/adminPanelDeliveryView':
+      case RouteNames.adminPanelDeliveryView:
         return MaterialPageRoute(builder: ((context) => AdminDeliveryMen()));
 
-      case '/deliveryWorkers':
+      case RouteNames.deliveryWorkers:
         return MaterialPageRoute(builder: ((context) => DeliveryWorkers()));
 
-      case '/foodFilterData':
+      case RouteNames.foodFilterData:
         return MaterialPageRoute(
           builder: (((context) => FilterFoodData())),
         );
 
-      case '/foodFilter':
+      case RouteNames.foodFilter:
         return MaterialPageRoute(builder: (((context) => FoodFilter())));
 
-      case '/registerAddress':
+      case RouteNames.registerAddress:
         return MaterialPageRoute(builder: (((context) => RegisterAddress())));
 
-      case '/deliveryPanel':
+      case RouteNames.deliveryPanel:
         return MaterialPageRoute(builder: ((context) => DeliveryPanel()));
 
-      case '/delieveryCheckOut':
-        DeliveryCheckOut? args = settings.arguments as DeliveryCheckOut?;
+      case RouteNames.delieveryCheckOut:
+        List<CartModel> args = settings.arguments as List<CartModel>;
         return MaterialPageRoute(
           builder: ((context) => DeliveryCheckOut(
-                documents: args!.documents,
+                documents: args,
               )),
         );
 
-      case '/signUp':
+      case RouteNames.signUp:
         return MaterialPageRoute(builder: (context) => SignUp());
 
-      case '/signIn':
+      case RouteNames.signIn:
         return MaterialPageRoute(builder: (context) => SignIn());
 
-      case '/homePage':
+      case RouteNames.homePage:
         return MaterialPageRoute(builder: (context) => HomePage());
 
-      case '/adminPanel':
+      case RouteNames.adminPanel:
         return MaterialPageRoute(builder: (context) => AdminPanel());
 
-      case '/popularitems':
+      case RouteNames.popularitems:
         return MaterialPageRoute(builder: (context) => Popularitems());
 
-      case '/specialItems':
+      case RouteNames.specialItems:
         return MaterialPageRoute(builder: (context) => Specialitems());
 
-      case '/resetPassword':
+      case RouteNames.resetPassword:
         return MaterialPageRoute(builder: (context) => PasswordReset());
 
-      case '/productPage':
+      case RouteNames.productPage:
         return MaterialPageRoute(builder: (context) => ProductPage());
 
-      case '/productDetails':
+      case RouteNames.productDetails:
         ProductDetails? args = settings.arguments as ProductDetails?;
         return MaterialPageRoute(
           builder: (context) => ProductDetails(
@@ -210,6 +215,7 @@ class RouteGenerator {
         return Scaffold(
           appBar: AppBar(
             title: Text("404 Error"),
+            backgroundColor: Colors.red,
           ),
           body: Center(
             child: Text("Page not found....."),
@@ -218,8 +224,4 @@ class RouteGenerator {
       },
     );
   }
-}
-
-class RouteNames {
-  static const String editDeliveryReview = 'editDeliveryReview';
 }

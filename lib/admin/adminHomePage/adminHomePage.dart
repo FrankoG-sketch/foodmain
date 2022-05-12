@@ -46,6 +46,14 @@ class _AdminPanelState extends State<AdminPanel> {
     GlobalKey<FormState> _formkey = GlobalKey<FormState>();
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        title: Text(
+          "Welcome: $email",
+          style: TextStyle(
+              fontSize: 18.0, fontWeight: FontWeight.w600, color: Colors.white),
+        ),
+      ),
       drawer: AdminDrawerClass(),
       body: Container(
         height: size.height,
@@ -53,28 +61,7 @@ class _AdminPanelState extends State<AdminPanel> {
           physics: BouncingScrollPhysics(),
           slivers: [
             SliverPadding(
-              padding: const EdgeInsets.symmetric(vertical: 30.0),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 35.0),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          "Welcome: $email",
-                          style: TextStyle(
-                              fontSize: 18.0, fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(vertical: 20.0),
+              padding: const EdgeInsets.symmetric(vertical: 3.0),
             ),
             SliverToBoxAdapter(
               child: Padding(
@@ -104,7 +91,7 @@ class _AdminPanelState extends State<AdminPanel> {
               children: [
                 InkWell(
                   onTap: () => openDialog(context, _formkey,
-                      confirmPasswordController, '/adminInvertory'),
+                      confirmPasswordController, RouteNames.adminInvertory),
                   child: AdminCards(
                     color: Color.fromARGB(255, 104, 194, 131),
                     widget: Column(
@@ -112,7 +99,57 @@ class _AdminPanelState extends State<AdminPanel> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Inventory",
+                          "Orders",
+                          style: TextStyle(color: Colors.white, fontSize: 18.0),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // InkWell(
+                //   onTap: () => Navigator.pushNamed(context, '/nrr'),
+                //   child: AdminCards(
+                //     color: Color.fromARGB(255, 8, 146, 38),
+                //     widget: Column(
+                //       crossAxisAlignment: CrossAxisAlignment.center,
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       children: [
+                //         Text(
+                //           "Supermarkets",
+                //           style: TextStyle(color: Colors.white, fontSize: 18.0),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
+                // InkWell(
+                //   onTap: () =>
+                //       Navigator.pushNamed(context, '/adminPanelDeliveryView'),
+                //   child: AdminCards(
+                //     color: Color.fromARGB(255, 8, 146, 38),
+                //     widget: Column(
+                //       crossAxisAlignment: CrossAxisAlignment.center,
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       children: [
+                //         Text(
+                //           "Delivery \nPersonnel",
+                //           style: TextStyle(color: Colors.white, fontSize: 18.0),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
+                InkWell(
+                  onTap: () =>
+                      Navigator.pushNamed(context, RouteNames.deliveryOrders),
+                  child: AdminCards(
+                    color: Color.fromARGB(255, 52, 139, 99),
+                    widget: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Delivery Progress",
                           style: TextStyle(color: Colors.white, fontSize: 18.0),
                         ),
                       ],
@@ -121,39 +158,7 @@ class _AdminPanelState extends State<AdminPanel> {
                 ),
                 InkWell(
                   onTap: () =>
-                      Navigator.pushNamed(context, '/adminPanelDeliveryView'),
-                  child: AdminCards(
-                    color: Color.fromARGB(255, 8, 146, 38),
-                    widget: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Delivery \nPersonnel",
-                          style: TextStyle(color: Colors.white, fontSize: 18.0),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () => Navigator.pushNamed(context, '/deliveryOrders'),
-                  child: AdminCards(
-                    color: Color.fromARGB(255, 52, 139, 99),
-                    widget: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Delivery Orders",
-                          style: TextStyle(color: Colors.white, fontSize: 18.0),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () => Navigator.pushNamed(context, '/adminFoodFilter'),
+                      Navigator.pushNamed(context, RouteNames.adminFoodFilter),
                   child: AdminCards(
                     color: Color.fromARGB(255, 125, 211, 122),
                     widget: Column(
@@ -192,10 +197,8 @@ class _AdminPanelState extends State<AdminPanel> {
               delegate: SliverChildListDelegate(
                 [
                   InkWell(
-                    onTap: () => Navigator.pushNamed(
-                      context,
-                      '/adminFeedBack',
-                    ),
+                    onTap: () =>
+                        Navigator.pushNamed(context, RouteNames.adminFeedBack),
                     child: StreamBuilder(
                         stream: FirebaseFirestore.instance
                             .collection("FeedBack")
@@ -215,7 +218,7 @@ class _AdminPanelState extends State<AdminPanel> {
                               decoration: BoxDecoration(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(20)),
-                                color: snapshot.data!.docs.length < 30
+                                color: snapshot.data!.docs.length < 5
                                     ? Theme.of(context).primaryColor
                                     : Colors.red,
                               ),
@@ -242,10 +245,8 @@ class _AdminPanelState extends State<AdminPanel> {
                   ),
                   SizedBox(height: size.height * 0.02),
                   InkWell(
-                    onTap: () => Navigator.pushNamed(
-                      context,
-                      '/viewClients',
-                    ),
+                    onTap: () =>
+                        Navigator.pushNamed(context, RouteNames.viewClients),
                     child: StreamBuilder(
                         stream: FirebaseFirestore.instance
                             .collection("Users")
@@ -290,47 +291,52 @@ class _AdminPanelState extends State<AdminPanel> {
                         }),
                   ),
                   SizedBox(height: size.height * 0.02),
-                  StreamBuilder(
-                      stream: FirebaseFirestore.instance
-                          .collection("Users")
-                          .where("role", isEqualTo: 'Delivery')
-                          .snapshots(),
-                      builder:
-                          (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                        if (!snapshot.hasData)
-                          return Center(child: CircularProgressIndicator());
-                        else if (snapshot.data!.docs.isEmpty)
-                          return Center(
-                            child: Text("No Orders"),
-                          );
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 35.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              color: Color.fromARGB(255, 52, 139, 99),
-                            ),
-                            height: size.height * 0.10,
-                            width: double.infinity,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 35.0, vertical: 20),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Delivery Personnel Count: ${snapshot.data!.docs.length}",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 18.0),
-                                  )
-                                ],
+                  InkWell(
+                    onTap: () => Navigator.pushNamed(
+                        context, RouteNames.adminPanelDeliveryView),
+                    child: StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection("Users")
+                            .where("role", isEqualTo: 'Delivery')
+                            .snapshots(),
+                        builder:
+                            (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (!snapshot.hasData)
+                            return Center(child: CircularProgressIndicator());
+                          else if (snapshot.data!.docs.isEmpty)
+                            return Center(
+                              child: Text("No Orders"),
+                            );
+                          return Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 35.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                color: Color.fromARGB(255, 52, 139, 99),
+                              ),
+                              height: size.height * 0.10,
+                              width: double.infinity,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 35.0, vertical: 20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Delivery Personnel Count: ${snapshot.data!.docs.length}",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 18.0),
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      }),
+                          );
+                        }),
+                  ),
                 ],
               ),
             ),
@@ -354,7 +360,7 @@ class _AdminPanelState extends State<AdminPanel> {
         return StatefulBuilder(
           builder: (context, setState) => AlertDialog(
             title: SingleChildScrollView(
-              child: Text("Enter Password to View Inventory"),
+              child: Text("Enter Password to View active orders"),
             ),
             content: Form(
               key: _formkey,

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shop_app/Authentication/auth.dart';
+import 'package:shop_app/utils/magic_strings.dart';
 import 'package:shop_app/utils/widgets.dart';
 
 class FoodFilter extends StatefulWidget {
@@ -39,7 +40,7 @@ class _FoodFilterState extends State<FoodFilter> {
                                       Theme.of(context).primaryColor,
                                   onPressed: (() async {
                                     await Navigator.pushNamed(
-                                        context, '/foodFilterData');
+                                        context, RouteNames.foodFilterData);
                                   }),
                                   child: Icon(
                                     Icons.add,

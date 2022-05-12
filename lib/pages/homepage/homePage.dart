@@ -1,19 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/Authentication/auth.dart';
 import 'package:shop_app/Model/productModel.dart';
-import 'package:shop_app/pages/cart.dart';
+import 'package:shop_app/pages/cart/cart.dart';
 import 'package:shop_app/pages/delivery/delivery.dart';
 import 'package:shop_app/pages/homepage/homePageDateInfo.dart';
 import 'package:shop_app/pages/homepage/popularProduct.dart';
 import 'package:shop_app/pages/homepage/services.dart';
 import 'package:shop_app/pages/homepage/special.dart';
 import 'package:shop_app/pages/homepage/specialOffer.dart';
-import 'package:shop_app/pages/productDetails.dart';
 import 'package:shop_app/pages/profile/profile.dart';
 import 'package:shop_app/utils/icon.dart';
 import 'package:shop_app/utils/jam_icons_icons.dart';
@@ -254,19 +251,28 @@ class _HomeContentState extends State<HomeContent> {
                         setTag(iconItems[index].tag);
                         _onSelected(index);
                         if (index == 0) {
-                          Navigator.pushNamed(context, '/allFoods');
+                          Navigator.pushNamed(
+                            context,
+                            RouteNames.allFoods,
+                          );
                         }
                         if (index == 1) {
-                          Navigator.pushNamed(context, '/starch');
+                          Navigator.pushNamed(
+                            context,
+                            RouteNames.starch,
+                          );
                         }
                         if (index == 2) {
-                          Navigator.pushNamed(context, '/protein');
+                          Navigator.pushNamed(context, RouteNames.protein);
                         }
                         if (index == 3) {
-                          Navigator.pushNamed(context, '/fruits&Veg');
+                          Navigator.pushNamed(
+                            context,
+                            RouteNames.fruitsAndVeg,
+                          );
                         }
                         if (index == 4) {
-                          Navigator.pushNamed(context, '/diary');
+                          Navigator.pushNamed(context, RouteNames.dairy);
                         }
                       },
                       child: Container(

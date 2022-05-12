@@ -59,23 +59,26 @@ class _ViewClientsState extends State<ViewClients> {
                     child: Card(
                       child: ListTile(
                         leading: SizedBox(
-                          height: size.height * 0.10,
-                          //width: size.width * 0.10,
-                          child: Image(
-                            image: NetworkImage(userModel.imgUrl!),
-                            loadingBuilder: (context, child, progress) {
-                              return progress == null
-                                  ? child
-                                  : Center(child: CircularProgressIndicator());
-                            },
-                            errorBuilder: (BuildContext context,
-                                Object exception, StackTrace? stackTrace) {
-                              return Padding(
-                                padding: const EdgeInsets.all(18.0),
-                                child: Icon(Icons.broken_image_outlined),
-                              );
-                            },
-                            fit: BoxFit.cover,
+                          // height: size.height * 0.10,
+                          // width: size.width * 0.10,
+                          child: ClipOval(
+                            child: Image(
+                              image: NetworkImage(userModel.imgUrl!),
+                              loadingBuilder: (context, child, progress) {
+                                return progress == null
+                                    ? child
+                                    : Center(
+                                        child: CircularProgressIndicator());
+                              },
+                              errorBuilder: (BuildContext context,
+                                  Object exception, StackTrace? stackTrace) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(18.0),
+                                  child: Icon(Icons.broken_image_outlined),
+                                );
+                              },
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                         title: Text(userModel.fullName!),

@@ -14,11 +14,8 @@ import 'package:shop_app/Authentication/auth.dart';
 import 'package:shop_app/utils/store_provider.dart';
 import 'package:shop_app/utils/widgets.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
-
 import '../../Model/supermarketModel.dart';
 import '../../utils/magic_strings.dart';
-
-// ref.read(storeProvider.notifier).updateStore('');
 
 class Profile extends ConsumerStatefulWidget {
   @override
@@ -34,7 +31,10 @@ class _ProfileState extends ConsumerState<Profile> {
   _onSelect(PageEnum value) {
     switch (value) {
       case PageEnum.foodFilter:
-        Navigator.pushNamed(context, '/foodFilter');
+        Navigator.pushNamed(
+          context,
+          RouteNames.foodFilter,
+        );
         break;
       default:
         print("Something went wrong");
@@ -68,7 +68,7 @@ class _ProfileState extends ConsumerState<Profile> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-
+    print(ref.read(storeProvider));
     return Scaffold(
       appBar: AppBar(
           actions: [
@@ -232,21 +232,6 @@ class _ProfileState extends ConsumerState<Profile> {
                                   style: TextStyle(fontSize: 16.0),
                                 ),
                               ),
-                              // TextButton(
-                              //     onPressed: () async {
-                              //       var files = await FirebaseFirestore.instance
-                              //           .collection('PopularProducts')
-                              //           .snapshots()
-                              //           .first;
-                              //       for (var file in files.docs) {
-                              //         Map<String, dynamic> data = file.data();
-                              //         data.addAll({"tag": "popular items"});
-                              //         FirebaseFirestore.instance
-                              //             .collection('foodJamMandeville')
-                              //             .add(data);
-                              //       }
-                              //     },
-                              //     child: Text("add")),
                               SizedBox(height: size.height * 0.02),
                               ExistApp(size: size),
                               SizedBox(height: size.height * 0.20),
@@ -264,12 +249,6 @@ class _ProfileState extends ConsumerState<Profile> {
       ),
     );
   }
-
-  // VoidCallback christiana() =>
-  //     ref.read(storeProvider.notifier).updateStore('foodJamChristiana');
-
-  // VoidCallback mandeville() =>
-  //     ref.read(storeProvider.notifier).updateStore('foodJamMandeville');
 
   Future<void> initTargets() async {
     targets.add(

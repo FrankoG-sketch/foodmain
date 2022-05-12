@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_app/pages/productDetails.dart';
+import 'package:shop_app/utils/magic_strings.dart';
 
 class MySearchDelegate extends SearchDelegate {
   final collection;
@@ -50,7 +51,7 @@ class MySearchDelegate extends SearchDelegate {
                       child: ListTile(
                         onTap: () => Navigator.pushNamed(
                           context,
-                          '/productDetails',
+                          RouteNames.productDetails,
                           arguments: ProductDetails(
                             heroTag: a['img'],
                             name: a['name'],

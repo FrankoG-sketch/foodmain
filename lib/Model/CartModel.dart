@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 CartModel cartModelFromJson(String str) => CartModel.fromJson(json.decode(str));
 
 String cartModelToJson(CartModel data) => json.encode(data.toJson());
@@ -13,24 +15,27 @@ class CartModel {
     this.price,
     this.uid,
     this.userName,
+    this.supermarket,
   });
 
-  String? date;
+  Timestamp? date;
   String? quantity;
   String? img;
   String? productName;
   String? price;
   String? uid;
   String? userName;
+  String? supermarket;
 
   factory CartModel.fromJson(Map<String, dynamic> json) => CartModel(
-        date: json['Date'].toString(),
-        quantity: json['Quantity'],
+        date: json['date'] ?? json['Date'],
+        quantity: json['quantity'] ?? json['Quantity'],
         img: json['img'],
         productName: json['name'],
         price: json['price'],
         uid: json['uid'],
         userName: json['userName'],
+        supermarket: json['supermarket'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -40,6 +45,7 @@ class CartModel {
         "name": productName,
         "price": price,
         "uid": uid,
-        "userName": userName
+        "userName": userName,
+        "supermarket": supermarket,
       };
 }

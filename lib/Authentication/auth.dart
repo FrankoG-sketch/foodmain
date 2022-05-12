@@ -123,7 +123,7 @@ class Authentication {
       sharedPreferences.setString(SharedPreferencesNames.email, email);
 
       Navigator.of(context).pushNamedAndRemoveUntil(
-          '/homePage', (Route<dynamic> route) => false);
+          RouteNames.homePage, (Route<dynamic> route) => false);
     } on FirebaseException catch (e) {
       callBack();
       var error = e.message.toString().replaceAll(
@@ -426,20 +426,20 @@ class Authentication {
             if (role.isNotEmpty) {
               if (role == 'User') {
                 Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/homePage', (Route<dynamic> route) => false);
+                    RouteNames.homePage, (Route<dynamic> route) => false);
 
                 prefs.setString(SharedPreferencesNames.name, fullName);
                 prefs.setString(SharedPreferencesNames.address, address);
               } else if (role == 'Admin') {
                 Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/adminPanel', (Route<dynamic> route) => false);
+                    RouteNames.adminPanel, (Route<dynamic> route) => false);
                 var hashedPassword =
                     new DBCrypt().hashpw(password, DBCrypt().gensalt());
                 prefs.setString(
                     SharedPreferencesNames.password, hashedPassword);
               } else if (role == 'Delivery') {
                 Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/deliveryPanel', (Route<dynamic> route) => false);
+                    RouteNames.deliveryPanel, (Route<dynamic> route) => false);
               }
             }
           },
@@ -533,7 +533,7 @@ class Authentication {
       prfs.remove('address');
       prfs.remove('password');
       Navigator.pushNamedAndRemoveUntil(
-          context, '/signIn', (Route<dynamic> route) => false);
+          context, RouteNames.signIn, (Route<dynamic> route) => false);
     } catch (e) {
       var snackBar = snackBarWidget(
           Row(

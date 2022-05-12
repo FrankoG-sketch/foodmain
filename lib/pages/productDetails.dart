@@ -3,23 +3,32 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shop_app/Authentication/auth.dart';
 import 'package:shop_app/Model/productReviewModel.dart';
 import 'package:shop_app/pages/editRating/editRatings.dart';
 import 'package:shop_app/pages/product%20ratings/productRatings.dart';
 import 'package:shop_app/pages/view%20ratings/viewRatings.dart';
+import 'package:shop_app/utils/magic_strings.dart';
+import 'package:shop_app/utils/store_provider.dart';
 import 'package:shop_app/utils/widgets.dart';
 
-class ProductDetails extends StatefulWidget {
+class ProductDetails extends ConsumerStatefulWidget {
   final heroTag;
   final name;
   final price;
   final rating;
+  final superMarket;
 
-  const ProductDetails(
-      {Key? key, this.heroTag, this.name, this.price, required this.rating})
-      : super(key: key);
+  const ProductDetails({
+    Key? key,
+    this.heroTag,
+    this.name,
+    this.price,
+    required this.rating,
+    this.superMarket,
+  }) : super(key: key);
 
   @override
   _ProductDetailsState createState() => _ProductDetailsState();
@@ -31,25 +40,25 @@ enum PageEnum {
   editRatings,
 }
 
-class _ProductDetailsState extends State<ProductDetails> {
+class _ProductDetailsState extends ConsumerState<ProductDetails> {
   _onSelect(PageEnum value) {
     switch (value) {
       case PageEnum.productRatings:
-        Navigator.pushNamed(context, '/productRatings',
+        Navigator.pushNamed(context, RouteNames.productRatings,
             arguments: ProductRatings(
                 heroTag: this.widget.heroTag,
                 productName: this.widget.name,
                 rating: this.widget.rating));
         break;
       case PageEnum.viewRatings:
-        Navigator.pushNamed(context, '/viewProductRatings',
+        Navigator.pushNamed(context, RouteNames.viewProductRatings,
             arguments: ViewProductRatings(
               heroTag: this.widget.heroTag,
               productName: this.widget.name,
             ));
         break;
       case PageEnum.editRatings:
-        Navigator.pushNamed(context, '/editRating',
+        Navigator.pushNamed(context, RouteNames.editRating,
             arguments: EditRatings(
               heroTag: this.widget.heroTag,
               review: review,
@@ -70,6 +79,15 @@ class _ProductDetailsState extends State<ProductDetails> {
 
   var num = 1;
   late QueryDocumentSnapshot<ProductReviewModel> review;
+
+  late String _selectedSupermarket;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedSupermarket = ref.read(storeProvider);
+  }
+
   @override
   Widget build(BuildContext context) {
     String? uid = FirebaseAuth.instance.currentUser!.uid;
@@ -268,6 +286,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                                                                     "uid": uid,
                                                                     "userName":
                                                                         fullName,
+                                                                    "supermarket":
+                                                                        _selectedSupermarket,
                                                                   },
                                                                 ).then((value) {
                                                                   Fluttertoast.showToast(
@@ -391,9 +411,11 @@ class _ProductDetailsState extends State<ProductDetails> {
                                                                       TextButton(
                                                                         onPressed:
                                                                             () {
-                                                                          Navigator.popAndPushNamed(
-                                                                              context,
-                                                                              '/foodFilter');
+                                                                          Navigator
+                                                                              .popAndPushNamed(
+                                                                            context,
+                                                                            RouteNames.foodFilter,
+                                                                          );
                                                                         },
                                                                         child: Text(
                                                                             "Add Food Filter"),
@@ -422,242 +444,251 @@ class _ProductDetailsState extends State<ProductDetails> {
                                               indent: 50.0,
                                             ),
                                             Container(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Column(
-                                                  children: <Widget>[
-                                                    StreamBuilder<
-                                                            QuerySnapshot<
-                                                                ProductReviewModel>>(
-                                                        stream: FirebaseFirestore
-                                                            .instance
-                                                            .collection(
-                                                                "Product Review")
-                                                            .where(
-                                                                "product name",
-                                                                isEqualTo: this
-                                                                    .widget
-                                                                    .name)
-                                                            .withConverter(
-                                                              fromFirestore: (snapshot,
-                                                                      _) =>
-                                                                  ProductReviewModel
-                                                                      .fromJson(
-                                                                          snapshot
-                                                                              .data()!),
-                                                              toFirestore:
-                                                                  (ProductReviewModel
-                                                                              model,
-                                                                          _) =>
-                                                                      model
-                                                                          .toJson(),
-                                                            )
-                                                            .snapshots(),
-                                                        builder: (context,
-                                                            snapshot) {
-                                                          if (!snapshot.hasData)
-                                                            return Center(
-                                                                child:
-                                                                    CircularProgressIndicator());
-                                                          double total = 0;
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Column(
+                                                children: <Widget>[
+                                                  StreamBuilder<
+                                                          QuerySnapshot<
+                                                              ProductReviewModel>>(
+                                                      stream: FirebaseFirestore
+                                                          .instance
+                                                          .collection(
+                                                              "Product Review")
+                                                          .where("product name",
+                                                              isEqualTo: this
+                                                                  .widget
+                                                                  .name)
+                                                          .withConverter(
+                                                            fromFirestore: (snapshot,
+                                                                    _) =>
+                                                                ProductReviewModel
+                                                                    .fromJson(
+                                                                        snapshot
+                                                                            .data()!),
+                                                            toFirestore:
+                                                                (ProductReviewModel
+                                                                            model,
+                                                                        _) =>
+                                                                    model
+                                                                        .toJson(),
+                                                          )
+                                                          .snapshots(),
+                                                      builder:
+                                                          (context, snapshot) {
+                                                        if (!snapshot.hasData)
+                                                          return Center(
+                                                              child:
+                                                                  CircularProgressIndicator());
+                                                        double total = 0;
 
-                                                          snapshot.data!.docs
-                                                              .forEach((doc) {
-                                                            total +=
-                                                                double.parse(doc
-                                                                    .data()
-                                                                    .ratings!);
-                                                          });
-                                                          double average =
-                                                              snapshot
-                                                                      .data!
-                                                                      .docs
-                                                                      .isEmpty
-                                                                  ? 0
-                                                                  : total /
-                                                                      snapshot
-                                                                          .data!
-                                                                          .docs
-                                                                          .length;
+                                                        snapshot.data!.docs
+                                                            .forEach((doc) {
+                                                          total += double.parse(
+                                                              doc
+                                                                  .data()
+                                                                  .ratings!);
+                                                        });
+                                                        double average =
+                                                            snapshot.data!.docs
+                                                                    .isEmpty
+                                                                ? 0
+                                                                : total /
+                                                                    snapshot
+                                                                        .data!
+                                                                        .docs
+                                                                        .length;
 
-                                                          return Container(
-                                                              child: Padding(
+                                                        return Container(
+                                                            child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .symmetric(
+                                                                  vertical:
+                                                                      30.0),
+                                                          child:
+                                                              RatingBarIndicator(
+                                                            rating: average,
+                                                            itemBuilder:
+                                                                (context,
+                                                                        index) =>
+                                                                    Icon(
+                                                              selectedIcon ??
+                                                                  Icons.star,
+                                                              color: Color
+                                                                  .fromARGB(
+                                                                      255,
+                                                                      223,
+                                                                      168,
+                                                                      5),
+                                                            ),
+                                                            itemCount: 5,
+                                                            itemSize: 20.0,
+                                                            unratedColor: Colors
+                                                                .amber
+                                                                .withAlpha(85),
+                                                            direction:
+                                                                Axis.horizontal,
+                                                          ),
+                                                        ));
+                                                      }),
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                            .symmetric(
+                                                        horizontal: 8.0),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: <Widget>[
+                                                        Text(
+                                                          '\$${widget.price}',
+                                                          style: TextStyle(
+                                                            fontSize: 20.0,
+                                                            fontFamily:
+                                                                'PlayfairDisplay - Regular',
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          height: 25.0,
+                                                          color: Colors.grey,
+                                                          width: 1.0,
+                                                        ),
+                                                        Container(
+                                                          width: 125.0,
+                                                          height: 40.0,
+                                                          decoration: BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          17.0),
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .primaryColor),
+                                                          child: Padding(
                                                             padding:
                                                                 const EdgeInsets
                                                                         .symmetric(
-                                                                    vertical:
-                                                                        30.0),
-                                                            child:
-                                                                RatingBarIndicator(
-                                                              rating: average,
-                                                              itemBuilder:
-                                                                  (context,
-                                                                          index) =>
-                                                                      Icon(
-                                                                selectedIcon ??
-                                                                    Icons.star,
-                                                                color: Color
-                                                                    .fromARGB(
-                                                                        255,
-                                                                        223,
-                                                                        168,
-                                                                        5),
-                                                              ),
-                                                              itemCount: 5,
-                                                              itemSize: 20.0,
-                                                              unratedColor:
-                                                                  Colors.amber
-                                                                      .withAlpha(
-                                                                          85),
-                                                              direction: Axis
-                                                                  .horizontal,
-                                                            ),
-                                                          ));
-                                                        }),
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          horizontal: 8.0),
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: <Widget>[
-                                                          Text(
-                                                            '\$${widget.price}',
-                                                            style: TextStyle(
-                                                              fontSize: 20.0,
-                                                              fontFamily:
-                                                                  'PlayfairDisplay - Regular',
-                                                            ),
-                                                          ),
-                                                          Container(
-                                                            height: 25.0,
-                                                            color: Colors.grey,
-                                                            width: 1.0,
-                                                          ),
-                                                          Container(
-                                                            width: 125.0,
-                                                            height: 40.0,
-                                                            decoration: BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            17.0),
-                                                                color: Theme.of(
-                                                                        context)
-                                                                    .primaryColor),
-                                                            child: Padding(
-                                                              padding: const EdgeInsets
-                                                                      .symmetric(
-                                                                  horizontal:
-                                                                      8.0),
-                                                              child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
-                                                                children: <
-                                                                    Widget>[
-                                                                  InkWell(
-                                                                    onTap: () {
-                                                                      setState(
-                                                                        () {
-                                                                          if (num >
-                                                                              1) {
-                                                                            num--;
-                                                                          }
-                                                                        },
-                                                                      );
-                                                                    },
-                                                                    child:
-                                                                        Padding(
-                                                                      padding:
-                                                                          const EdgeInsets
-                                                                              .only(),
-                                                                      child:
-                                                                          Container(
-                                                                        height:
-                                                                            25.0,
-                                                                        width:
-                                                                            25.0,
-                                                                        decoration:
-                                                                            BoxDecoration(
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(7.0),
-                                                                          color:
-                                                                              Theme.of(context).primaryColor,
-                                                                        ),
-                                                                        child:
-                                                                            Center(
-                                                                          child:
-                                                                              Icon(
-                                                                            Icons.remove,
-                                                                            color:
-                                                                                Colors.white,
-                                                                            size:
-                                                                                25.0,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  Text(
-                                                                    num.toString(),
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .white),
-                                                                  ),
-                                                                  InkWell(
-                                                                    onTap: () {
-                                                                      setState(
-                                                                          () {
-                                                                        if (num <
-                                                                            10) {
-                                                                          num++;
+                                                                    horizontal:
+                                                                        8.0),
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
+                                                              children: <
+                                                                  Widget>[
+                                                                InkWell(
+                                                                  onTap: () {
+                                                                    setState(
+                                                                      () {
+                                                                        if (num >
+                                                                            1) {
+                                                                          num--;
                                                                         }
-                                                                      });
-                                                                    },
+                                                                      },
+                                                                    );
+                                                                  },
+                                                                  child:
+                                                                      Padding(
+                                                                    padding:
+                                                                        const EdgeInsets
+                                                                            .only(),
                                                                     child:
                                                                         Container(
                                                                       height:
-                                                                          30.0,
+                                                                          25.0,
                                                                       width:
-                                                                          30.0,
+                                                                          25.0,
                                                                       decoration:
                                                                           BoxDecoration(
                                                                         borderRadius:
                                                                             BorderRadius.circular(7.0),
-                                                                        color: Colors
-                                                                            .white,
+                                                                        color: Theme.of(context)
+                                                                            .primaryColor,
                                                                       ),
                                                                       child:
                                                                           Center(
                                                                         child:
                                                                             Icon(
                                                                           Icons
-                                                                              .add,
+                                                                              .remove,
                                                                           color:
-                                                                              Theme.of(context).primaryColor,
+                                                                              Colors.white,
                                                                           size:
-                                                                              15.0,
+                                                                              25.0,
                                                                         ),
                                                                       ),
                                                                     ),
-                                                                  )
-                                                                ],
-                                                              ),
+                                                                  ),
+                                                                ),
+                                                                Text(
+                                                                  num.toString(),
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .white),
+                                                                ),
+                                                                InkWell(
+                                                                  onTap: () {
+                                                                    setState(
+                                                                        () {
+                                                                      if (num <
+                                                                          10) {
+                                                                        num++;
+                                                                      }
+                                                                    });
+                                                                  },
+                                                                  child:
+                                                                      Container(
+                                                                    height:
+                                                                        30.0,
+                                                                    width: 30.0,
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              7.0),
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                                    child:
+                                                                        Center(
+                                                                      child:
+                                                                          Icon(
+                                                                        Icons
+                                                                            .add,
+                                                                        color: Theme.of(context)
+                                                                            .primaryColor,
+                                                                        size:
+                                                                            15.0,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              ],
                                                             ),
-                                                          )
-                                                        ],
-                                                      ),
+                                                          ),
+                                                        )
+                                                      ],
                                                     ),
-                                                    SizedBox(height: 40.0),
-
-                                                    //Card which contains the blue Drug facts....
-
-                                                    SizedBox(height: 10.0),
-                                                  ],
-                                                )),
+                                                  ),
+                                                  SizedBox(height: 40.0),
+                                                  Row(
+                                                    children: [
+                                                      if (_selectedSupermarket ==
+                                                          'foodJamChristiana') ...[
+                                                        Text(
+                                                            "Supermarket: Jam Food Christiana"),
+                                                      ] else if (_selectedSupermarket ==
+                                                          'foodJamMandeville') ...[
+                                                        Text(
+                                                            "Supermarket: Jam Food Mandeville"),
+                                                      ],
+                                                    ],
+                                                  ),
+                                                  SizedBox(height: 10.0),
+                                                ],
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       ),

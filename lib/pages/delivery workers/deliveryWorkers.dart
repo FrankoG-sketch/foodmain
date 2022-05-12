@@ -4,6 +4,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:shop_app/Model/deliveryModel.dart';
 import 'package:shop_app/admin/Admin%20Authentication/adminAuthentication.dart';
 import 'package:shop_app/pages/delivery%20workers/deliveryWorkerRatings.dart';
+import 'package:shop_app/utils/magic_strings.dart';
 
 IconData? _selectedIcon;
 
@@ -64,7 +65,7 @@ class DeliveryWorkers extends StatelessWidget {
                             return InkWell(
                               onTap: () => Navigator.pushNamed(
                                 context,
-                                '/deliveryWorkerRatings',
+                                RouteNames.deliveryWorkerRatings,
                                 arguments: DeliveryWorkerRatings(
                                   address: deliveryMenModel.address,
                                   email: deliveryMenModel.email,

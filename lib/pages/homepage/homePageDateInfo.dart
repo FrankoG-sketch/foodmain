@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_app/admin/Admin%20Authentication/adminAuthentication.dart';
+import 'package:shop_app/utils/magic_strings.dart';
 import 'package:shop_app/utils/widgets.dart';
 
 class HomeData extends StatelessWidget {
@@ -70,7 +71,7 @@ class HomeData extends StatelessWidget {
                                                     onTap: () =>
                                                         Navigator.pushNamed(
                                                             context,
-                                                            '/profile'),
+                                                            RouteNames.profile),
                                                     child: Container(
                                                       child: ClipOval(
                                                         child: SizedBox(

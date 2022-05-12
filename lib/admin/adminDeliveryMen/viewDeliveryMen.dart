@@ -48,67 +48,72 @@ class ViewDeliveryMen extends StatelessWidget {
                       child: SizedBox(
                         height: size.height * 0.15,
                         child: Card(
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                height: size.height * 0.20,
-                                width: size.width * 0.30,
-                                child: Image(
-                                  image: NetworkImage(
-                                    deliveryMenModel.imgUrl!,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 18.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                ClipOval(
+                                  child: Image(
+                                    image: NetworkImage(
+                                      deliveryMenModel.imgUrl!,
+                                    ),
+                                    loadingBuilder: (context, child, progress) {
+                                      return progress == null
+                                          ? child
+                                          : Center(
+                                              child:
+                                                  CircularProgressIndicator());
+                                    },
+                                    errorBuilder: (BuildContext context,
+                                        Object exception,
+                                        StackTrace? stackTrace) {
+                                      return Padding(
+                                        padding: const EdgeInsets.all(18.0),
+                                        child:
+                                            Icon(Icons.broken_image_outlined),
+                                      );
+                                    },
+                                    fit: BoxFit.cover,
+                                    height: 75.0,
+                                    width: 75.0,
                                   ),
-                                  loadingBuilder: (context, child, progress) {
-                                    return progress == null
-                                        ? child
-                                        : Center(
-                                            child: CircularProgressIndicator());
-                                  },
-                                  errorBuilder: (BuildContext context,
-                                      Object exception,
-                                      StackTrace? stackTrace) {
-                                    return Padding(
-                                      padding: const EdgeInsets.all(18.0),
-                                      child: Icon(Icons.broken_image_outlined),
-                                    );
-                                  },
-                                  fit: BoxFit.cover,
-                                  height: 75.0,
-                                  width: 75.0,
                                 ),
-                              ),
-                              SizedBox(width: size.width * 0.05),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Name: ${deliveryMenModel.fullName!}'),
-                                  SizedBox(height: size.height * 0.01),
-                                  Row(
-                                    children: [
-                                      Text("Ratings: "),
-                                      RatingBarIndicator(
-                                        rating: double.parse(
-                                            deliveryMenModel.ratings!),
-                                        itemBuilder: (context, index) => Icon(
-                                          _selectedIcon ?? Icons.star,
-                                          color: Colors.amber,
+                                SizedBox(width: size.width * 0.05),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Name: ${deliveryMenModel.fullName!}'),
+                                    SizedBox(height: size.height * 0.01),
+                                    Row(
+                                      children: [
+                                        Text("Ratings: "),
+                                        RatingBarIndicator(
+                                          rating: double.parse(
+                                              deliveryMenModel.ratings!),
+                                          itemBuilder: (context, index) => Icon(
+                                            _selectedIcon ?? Icons.star,
+                                            color: Colors.amber,
+                                          ),
+                                          itemCount: 5,
+                                          itemSize: 13.0,
+                                          unratedColor:
+                                              Colors.amber.withAlpha(85),
+                                          direction: Axis.horizontal,
                                         ),
-                                        itemCount: 5,
-                                        itemSize: 13.0,
-                                        unratedColor:
-                                            Colors.amber.withAlpha(85),
-                                        direction: Axis.horizontal,
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: size.height * 0.01),
-                                  Text("Email: ${deliveryMenModel.email}"),
-                                  SizedBox(height: size.height * 0.01),
-                                  Text("Address: ${deliveryMenModel.address}"),
-                                ],
-                              )
-                            ],
+                                      ],
+                                    ),
+                                    SizedBox(height: size.height * 0.01),
+                                    Text("Email: ${deliveryMenModel.email}"),
+                                    SizedBox(height: size.height * 0.01),
+                                    Text(
+                                        "Address: ${deliveryMenModel.address}"),
+                                  ],
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),

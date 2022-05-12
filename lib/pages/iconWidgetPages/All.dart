@@ -5,6 +5,7 @@ import 'package:shop_app/Model/AllFoodModel.dart';
 import 'package:shop_app/admin/Admin%20Authentication/adminAuthentication.dart';
 import 'package:shop_app/pages/iconWidgetPages/searchDelegate.dart';
 import 'package:shop_app/pages/productDetails.dart';
+import 'package:shop_app/utils/magic_strings.dart';
 import 'package:shop_app/utils/store_provider.dart';
 
 class AllFoods extends ConsumerWidget {
@@ -39,7 +40,7 @@ class AllFoods extends ConsumerWidget {
                           "Food For this Segment is currently not available at this supermarket, please switch to the next branch and try again."),
                       TextButton(
                           onPressed: () =>
-                              Navigator.pushNamed(context, '/profile'),
+                              Navigator.pushNamed(context, RouteNames.profile),
                           child: Text("Switch Branch")),
                     ],
                   ),
@@ -75,7 +76,7 @@ class AllFoods extends ConsumerWidget {
                     return InkWell(
                       onTap: () => Navigator.pushNamed(
                         context,
-                        '/productDetails',
+                        RouteNames.productDetails,
                         arguments: ProductDetails(
                           heroTag: allFoodsModel.img,
                           name: allFoodsModel.name,

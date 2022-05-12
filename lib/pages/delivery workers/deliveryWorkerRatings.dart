@@ -6,6 +6,7 @@ import 'package:shop_app/Model/clientReviewModel.dart';
 import 'package:shop_app/Model/deliveryModel.dart';
 import 'package:shop_app/pages/delivery%20workers/createReview.dart';
 import 'package:shop_app/pages/delivery%20workers/editReview.dart';
+import 'package:shop_app/utils/magic_strings.dart';
 import 'package:shop_app/utils/widgets.dart';
 import 'package:intl/intl.dart';
 
@@ -34,14 +35,14 @@ class _DeliveryWorkerRatingsState extends State<DeliveryWorkerRatings> {
       case PageEnum.createReview:
         Navigator.pushNamed(
           context,
-          '/createDeliveryReview',
+          RouteNames.createDeliveryReview,
           arguments: CreateDeliveryReview(
               imgUrl: this.widget.imgUrl, name: this.widget.name),
         );
         break;
 
       case PageEnum.editReview:
-        Navigator.pushNamed(context, '/editDeliveryReview',
+        Navigator.pushNamed(context, RouteNames.editDeliveryReview,
             arguments: EditReview(
               heroTag: this.widget.imgUrl,
               reviewDeliveryPersonnel: review,

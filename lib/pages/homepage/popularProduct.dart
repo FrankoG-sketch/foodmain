@@ -5,6 +5,7 @@ import 'package:shop_app/Authentication/auth.dart';
 import 'package:shop_app/Model/productModel.dart';
 import 'package:shop_app/pages/homepage/homePage.dart';
 import 'package:shop_app/pages/productDetails.dart';
+import 'package:shop_app/utils/magic_strings.dart';
 import 'package:shop_app/utils/store_provider.dart';
 import 'package:shop_app/utils/widgets.dart';
 
@@ -77,7 +78,8 @@ class ProductBody extends ConsumerWidget {
                             TextButton(
                                 child: Text("See more"),
                                 onPressed: () {
-                                  Navigator.pushNamed(context, '/productPage');
+                                  Navigator.pushNamed(
+                                      context, RouteNames.productPage);
                                 }),
                           ],
                         ),
@@ -97,7 +99,7 @@ class ProductBody extends ConsumerWidget {
                           return InkWell(
                             onTap: () => Navigator.pushNamed(
                               context,
-                              '/productDetails',
+                              RouteNames.productDetails,
                               arguments: ProductDetails(
                                 heroTag: products.imgPath,
                                 name: products.name,

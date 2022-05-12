@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shop_app/utils/magic_strings.dart';
 import 'package:shop_app/utils/widgets.dart';
 
 class Services extends StatelessWidget {
@@ -16,7 +17,8 @@ class Services extends StatelessWidget {
       delegate: SliverChildListDelegate(
         [
           InkWell(
-            onTap: (() => Navigator.pushNamed(context, '/shippingPolicy')),
+            onTap: (() =>
+                Navigator.pushNamed(context, RouteNames.shippingPolicy)),
             child: sliverListElements(
               context,
               "assets/images/delivery.svg",
@@ -26,7 +28,7 @@ class Services extends StatelessWidget {
             ),
           ),
           InkWell(
-            onTap: () => Navigator.pushNamed(context, '/feedBack'),
+            onTap: () => Navigator.pushNamed(context, RouteNames.feedBack),
             child: sliverListElements(
                 context,
                 "assets/images/warning.svg",

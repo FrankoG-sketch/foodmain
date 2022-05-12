@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shop_app/Authentication/auth.dart';
 import 'package:shop_app/Model/productModel.dart';
 import 'package:shop_app/pages/homepage/homePage.dart';
+import 'package:shop_app/utils/magic_strings.dart';
 import 'package:shop_app/utils/store_provider.dart';
 import 'package:shop_app/utils/widgets.dart';
 
@@ -64,7 +65,8 @@ class SpecialBody extends ConsumerWidget {
                             TextButton(
                                 child: Text("See more"),
                                 onPressed: () {
-                                  Navigator.pushNamed(context, '/specialItems');
+                                  Navigator.pushNamed(
+                                      context, RouteNames.specialItems);
                                 }),
                           ],
                         ),
@@ -83,8 +85,10 @@ class SpecialBody extends ConsumerWidget {
                                 keyword.data() as Map<String, dynamic>);
 
                             return InkWell(
-                              onTap: () =>
-                                  Navigator.pushNamed(context, '/specialItems'),
+                              onTap: () => Navigator.pushNamed(
+                                context,
+                                RouteNames.specialItems,
+                              ),
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10.0, vertical: 20.0),
